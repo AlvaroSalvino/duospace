@@ -133,3 +133,13 @@ def exibir_perfil(request, perfil_id):
     context['timeline'] = context['perfil'].posts.all() 
 
     return render(request, 'perfil.html', context)
+
+@login_required(login_url='login')
+def delete_postagem(request, id_postagem):
+    post = Post.objects.get(id=id_postagem)
+
+    if post.perfil == request.user.perfil or request.user.is_superuser:
+        post.delete()
+        messages.add_message(request, messages.INFO, 'Post deletado com sucesso!')
+
+    return redirect('index')

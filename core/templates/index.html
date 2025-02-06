@@ -8,44 +8,49 @@ home
 <div class="feeds">
     <!--Feed One-->
     {% if timeline %}
-        {% for post in timeline %}
-        <div class="feed">
-            <div class="head">
-                <div class="user">
-                    <div class="profile-photo">
-                        <img src="{% if post.perfil.imagem_perfil %} /images/{{ post.perfil.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}" alt="Usuário">
-                    </div>
-                    <div class="ingo">
-                        <h3>{{ post.titulo }}</h3>
-                        <small>{{ post.data_postagem }} - <span class="capitalise">{{ post.tempo_decorrido }} atrás</span></small>
-                    </div>
+    {% for post in timeline %}
+    <div class="feed">
+        <div class="head">
+            <div class="user">
+                <div class="profile-photo">
+                    <img src="{% if post.perfil.imagem_perfil %} /images/{{ post.perfil.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}"
+                        alt="Usuário">
                 </div>
-                <span class="edit">
-                    <i class="uil uil-ellipsis-h"></i>
-                </span>
-            </div>
-            <div class="photo">
-                {% if post.imagem %}
-                <img src="/images/{{ post.imagem }}" alt="Post imagem">
-                {% endif %}
-            </div>
-            <div class="action-buttons">
-                <div class="interaction-buttons">
-                    <span><i class="uil uil-heart"></i></span>
-                    <span><i class="uil uil-comment-dots"></i></span>
-                    <span><i class="uil uil-share-alt"></i></span>
-                </div>
-                <div class="bookmark">
-                    <span><i class="uil uil-bookmark-full"></i></span>
+                <div class="ingo">
+                    <h3>{{ post.titulo }}</h3>
+                    <small>{{ post.data_postagem }} - <span class="capitalise">{{ post.tempo_decorrido }}
+                            atrás</span></small>
                 </div>
             </div>
-
-            <div class="caption">
-                <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
-            </div>
-            <!-- <div class="comments text-muted">View All 532 comments</div> -->
+            <span class="edit">
+                <i class="uil uil-ellipsis-h"></i>
+            </span>
         </div>
-        {% endfor %}
+        <div class="photo">
+            {% if post.imagem %}
+            <img src="/images/{{ post.imagem }}" alt="Post imagem">
+            {% endif %}
+        </div>
+        <div class="action-buttons">
+            <div class="interaction-buttons">
+                <span><i class="uil uil-heart"></i></span>
+                <span><i class="uil uil-comment-dots"></i></span>
+                <span><i class="uil uil-share-alt"></i></span>
+            </div>
+            <div class="bookmark">
+                <span><i class="uil uil-bookmark-full"></i></span>
+            </div>
+        </div>
+
+        <div class="caption">
+            <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
+        </div>
+        {% if perfil_logado.usuario.is_superuser or post.perfil == perfil_logado %}
+        <a class="btn btn-danger text-white float-right" href="{% url 'delete_postagem' post.id %}">Deletar</a>
+        {% endif %}
+        <!-- <div class="comments text-muted">View All 532 comments</div> -->
+    </div>
+    {% endfor %}
     {% endif %}
 </div>
 <!--End of The Feeds Section-->
