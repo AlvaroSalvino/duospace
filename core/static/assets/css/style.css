@@ -438,7 +438,9 @@ main .container .left .profile {
     display: flex;
     gap: 1rem;
 }
-
+.feed {
+    position: relative; /* Faz com que o dropdown seja posicionado relativo a este feed */
+}
 .middle .feeds .photo {
     border-radius: var(--card-border-radius);
     overflow: hidden;

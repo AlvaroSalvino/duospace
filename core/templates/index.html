@@ -3,6 +3,140 @@
 {% block title %}
 home
 {% endblock %}
+{% block styles %}
+<style>
+    /* Estilos gerais */
+    .edit {
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 3.5rem;
+        right: 13rem; /* Ajusta para um leve deslocamento à direita */
+        background-color: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        z-index: 1000;
+        width: 150px;
+        border-radius: 4px;
+    }
+
+    .dropdown-menu a {
+        display: block;
+        padding: 8px 10px;
+        text-decoration: none;
+        color: #333;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f0f0f0;
+    }
+
+    .dropdown-menu.show {
+        display: block;
+    }
+
+    .profile-photo img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    /* Media Query para telas pequenas (celulares) */
+    @media (max-width: 768px) {
+        .dropdown-menu {
+            right: 0; /* Ajusta o menu para ficar à esquerda em telas pequenas */
+            width: 100%; /* Menu ocupa toda a largura */
+        }
+
+        .profile-photo img {
+            width: 35px;
+            height: 35px;
+        }
+
+        .head .user {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .head .user h3 {
+            font-size: 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .interaction-buttons span {
+            margin: 5px 0;
+        }
+    }
+
+    /* Media Query para tablets */
+    @media (max-width: 1024px) {
+        .dropdown-menu {
+            right: 0; /* Ajuste do menu */
+            width: 130px; /* Ajuste da largura do menu */
+        }
+
+        .profile-photo img {
+            width: 45px;
+            height: 45px;
+        }
+
+        .head .user {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .head .user h3 {
+            font-size: 18px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+
+    /* Media Query para telas grandes (wide screens) */
+    @media (min-width: 1200px) {
+        .dropdown-menu {
+            right: 13rem; /* Posição original do menu para telas grandes */
+            width: 150px; /* Largura original do menu */
+        }
+
+        .profile-photo img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .head .user {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .head .user h3 {
+            font-size: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-start;
+        }
+    }
+</style>
+{% endblock %}
 {% block content %}
 <!--The Feeds Section-->
 <div class="feeds">
@@ -22,9 +156,25 @@ home
                             atrás</span></small>
                 </div>
             </div>
+            {% if perfil_logado.usuario.is_superuser %}
+            <!-- Edit button and Dropdown Menu -->
             <span class="edit">
-                <i class="uil uil-ellipsis-h"></i>
+                <i class="uil uil-ellipsis-h" onclick="toggleDropdown({{ post.id }})"></i>
             </span>
+            <div class="dropdown-menu" id="dropdown-{{ post.id }}">
+                <!-- <a href="">Editar</a> -->
+                <a href="{% url 'delete_postagem' post.id %}">Excluir</a>
+            </div>
+            {% elif post.perfil == perfil_logado %}
+            <!-- Edit button and Dropdown Menu -->
+            <span class="edit">
+                <i class="uil uil-ellipsis-h" onclick="toggleDropdown({{ post.id }})"></i>
+            </span>
+            <div class="dropdown-menu" id="dropdown-{{ post.id }}">
+                <!-- <a href="">Editar</a> -->
+                <a href="{% url 'delete_postagem' post.id %}">Excluir</a>
+            </div>
+            {% endif %}
         </div>
         <div class="photo">
             {% if post.imagem %}
@@ -45,13 +195,19 @@ home
         <div class="caption">
             <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
         </div>
-        {% if perfil_logado.usuario.is_superuser or post.perfil == perfil_logado %}
-        <a class="btn btn-danger text-white float-right" href="{% url 'delete_postagem' post.id %}">Deletar</a>
-        {% endif %}
         <!-- <div class="comments text-muted">View All 532 comments</div> -->
     </div>
     {% endfor %}
     {% endif %}
 </div>
 <!--End of The Feeds Section-->
+
+{% block scripts %}
+<script>
+    function toggleDropdown(postId) {
+        const dropdown = document.getElementById('dropdown-' + postId);
+        dropdown.classList.toggle('show');
+    }
+</script>
+{% endblock %}
 {% endblock %}

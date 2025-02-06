@@ -41,7 +41,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="DuoSpace">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    
+    {% block styles %}
+    {% endblock %}
     <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
@@ -442,6 +444,8 @@
     </div>
 
     <script src="{% static 'assets/js/script.js' %}"></script>
+    {% block scripts %}
+    {% endblock %}
 </body>
 
 </html>
