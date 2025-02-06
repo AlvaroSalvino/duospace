@@ -14,8 +14,8 @@ home
     .dropdown-menu {
         display: none;
         position: absolute;
-        top: 3.5rem;
-        right: 13rem; /* Ajusta para um leve deslocamento à direita */
+        top: 2.5rem;
+        right: 0; /* Ajusta para um leve deslocamento à direita */
         background-color: #fff;
         border: 1px solid #ddd;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -40,12 +40,6 @@ home
 
     .dropdown-menu.show {
         display: block;
-    }
-
-    .profile-photo img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
     }
 
     /* Media Query para telas pequenas (celulares) */
@@ -111,13 +105,8 @@ home
     /* Media Query para telas grandes (wide screens) */
     @media (min-width: 1200px) {
         .dropdown-menu {
-            right: 13rem; /* Posição original do menu para telas grandes */
+            right: 0; /* Posição original do menu para telas grandes */
             width: 150px; /* Largura original do menu */
-        }
-
-        .profile-photo img {
-            width: 50px;
-            height: 50px;
         }
 
         .head .user {
