@@ -71,8 +71,8 @@
                     {% csrf_token %}
                     <div for="imagem_perfil" class="profile-photo">
                         <label for="imagem_perfil">
-                        <img src="{% if perfil_logado.imagem_perfil %}/images/{{ perfil_logado.imagem_perfil }}{% else %}{% static 'assets/images/img/user.png' %}{% endif %}"
-                            alt="Foto de perfil" id="preview-imagem" style="cursor: pointer;">
+                            <img src="{% if perfil_logado.imagem_perfil %}/images/{{ perfil_logado.imagem_perfil }}{% else %}{% static 'assets/images/img/user.png' %}{% endif %}"
+                                alt="Foto de perfil" id="preview-imagem" style="cursor: pointer;">
                         </label>
                     </div>
                     <input type="file" id="imagem_perfil" name="imagem_perfil" style="display: none;"
@@ -411,12 +411,24 @@
                 {% csrf_token %}
                 <div class="input-group">
                     <label for="titulo">Título</label>
-                    <input type="text" id="titulo" name="titulo" required>
+                    <input type="text" id="titulo" name="titulo" required style="
+                    {% if background == 'lights-out' %}
+                    color: white;
+                    {% elif background == 'dim' %}
+                    color: white;
+                    {% else %}
+                    {% endif %}">
                 </div>
 
                 <div class="input-group">
                     <label for="texto">Texto</label>
-                    <textarea id="texto" name="texto" rows="4" required></textarea>
+                    <textarea id="texto" name="texto" rows="4" required style="
+                    {% if background == 'lights-out' %}
+                    color: white;
+                    {% elif background == 'dim' %}
+                    color: white;
+                    {% else %}
+                    {% endif %}"></textarea>
                 </div>
 
                 <div class="input-group">
