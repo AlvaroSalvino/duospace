@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from perfil.models import *
 from django.contrib import messages
 from django.utils.timesince import timesince
@@ -8,6 +9,8 @@ from django.core.files.storage import FileSystemStorage
 
 @login_required(login_url='login')
 def index(request):
+    user = request.user
+    perfil = get_object_or_404(Perfil, usuario=user)
     context = {
         'active_home': 'active',
     }
@@ -31,6 +34,12 @@ def index(request):
         context['timeline'] = paginator.page(1)
         if page is not None:
             messages.add_message(request, messages.INFO, 'A página {} não existe'.format(page))
+    
+    if request.method == "POST":
+        # Verifica e salva a foto se fornecida
+        if 'imagem_perfil' in request.FILES:
+            perfil.imagem_perfil = request.FILES['imagem_perfil']
+            perfil.save()  # Salva no banco de dados
 
     return render(request, 'index.html', context)
 

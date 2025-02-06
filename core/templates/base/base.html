@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
 </head>
+
 <body>
 
     <!--------Navigation Section---------->
@@ -66,10 +67,17 @@
             </form>
             <div class="create">
                 <label class="btn btn-primary" for="create post" id="open-post-modal">Publicar</label>
-                <a class="profile-photo" href="">
-                    <img src="{% if perfil_logado.imagem_perfil %} /images/{{ perfil_logado.imagem_perfil }}
-                    {% else %} {% static 'images/img/user.png' %} {% endif %}" alt="">
-                </a>
+                <form action="" method="post" enctype="multipart/form-data" id="upload-avatar">
+                    {% csrf_token %}
+                    <div for="imagem_perfil" class="profile-photo">
+                        <label for="imagem_perfil">
+                        <img src="{% if perfil_logado.imagem_perfil %}/images/{{ perfil_logado.imagem_perfil }}{% else %}{% static 'assets/images/img/user.png' %}{% endif %}"
+                            alt="Foto de perfil" id="preview-imagem" style="cursor: pointer;">
+                        </label>
+                    </div>
+                    <input type="file" id="imagem_perfil" name="imagem_perfil" style="display: none;"
+                        onchange="document.getElementById('upload-avatar').submit();">
+                </form>
             </div>
         </div>
     </nav>
@@ -84,7 +92,7 @@
                 <a class="profile">
                     <div class="profile-photo">
                         <img src="{% if perfil_logado.imagem_perfil %} /images/{{ perfil_logado.imagem_perfil }}
-                        {% else %} {% static 'images/img/user.png' %} {% endif %}" alt=""/>
+                        {% else %} {% static 'assets/images/img/user.png' %} {% endif %}" alt="" />
                     </div>
                     <div class="handle">
                         <h4>{{ perfil_logado.nome }}</h4>
@@ -111,7 +119,7 @@
                         <div class="notifications-popup">
                             <div>
                                 <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile6-44x44.jpg' %}" alt=""/>
+                                    <img src="{% static 'images/profile_img-44x44/profile6-44x44.jpg' %}" alt="" />
                                 </div>
                                 <div class="notificaion-body">
                                     <b>Matthew McConaughey</b> aceitou sua solicitação de amizade.
@@ -120,7 +128,7 @@
                             </div>
                             <div>
                                 <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile8-44x44.jpg' %}" alt=""/>
+                                    <img src="{% static 'images/profile_img-44x44/profile8-44x44.jpg' %}" alt="" />
                                 </div>
                                 <div class="notificaion-body">
                                     <b>Denzel Washington</b> aceitou sua solicitação de amizade.
@@ -129,7 +137,7 @@
                             </div>
                             <div>
                                 <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile9-44x44.webp' %}" alt=""/>
+                                    <img src="{% static 'images/profile_img-44x44/profile9-44x44.webp' %}" alt="" />
                                 </div>
                                 <div class="notificaion-body">
                                     <b>Martin Scorsese</b> comentou no seu post.
@@ -138,7 +146,7 @@
                             </div>
                             <div>
                                 <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile10-44x44.jpg' %}" alt=""/>
+                                    <img src="{% static 'images/profile_img-44x44/profile10-44x44.jpg' %}" alt="" />
                                 </div>
                                 <div class="notificaion-body">
                                     <b>Andrew Garfield</b> e <b>372 outras</b> pessoas curtiram seu post.
@@ -147,7 +155,7 @@
                             </div>
                             <div>
                                 <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-88x88/profile5-88x88.jpg' %}" alt=""/>
+                                    <img src="{% static 'images/profile_img-88x88/profile5-88x88.jpg' %}" alt="" />
                                 </div>
                                 <div class="notificaion-body">
                                     <b>Netflix</b> comentou em um post em que você foi marcado.
@@ -156,7 +164,7 @@
                             </div>
                             <div>
                                 <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile11-44x44.webp' %}" alt=""/>
+                                    <img src="{% static 'images/profile_img-44x44/profile11-44x44.webp' %}" alt="" />
                                 </div>
                                 <div class="notificaion-body">
                                     <b>Henry Cavill</b> enviou uma solicitação de amizade para você
@@ -185,7 +193,7 @@
                     <a class="menu-item">
                         <span><i class="uil uil-setting"></i></span>
                         <h3>Settings</h3>
-                    </a>    
+                    </a>
                 </div>
                 <!--End Of Sidebar Section-->
                 <a href="{% url 'deslogar' %}" class="btn btn-primary">Sair do DuoSpace</a>
@@ -315,7 +323,7 @@
                             <div>
                                 <h5>{{ convite.solicitante.nome }}</h5>
                                 <p class="text-muted">
-                                   8 mutual friends 
+                                    8 mutual friends
                                 </p>
                             </div>
                         </div>
@@ -348,14 +356,14 @@
                 <h4>Font Size</h4>
                 <div>
                     <h6>Aa</h6>
-                <div class="choose-size">
-                    <span class="font-size-1"></span>
-                    <span class="font-size-2"></span>
-                    <span class="font-size-3 active"></span>
-                    <span class="font-size-4"></span>
-                    <span class="font-size-5"></span>
-                </div>
-                <h3>Aa</h3>
+                    <div class="choose-size">
+                        <span class="font-size-1"></span>
+                        <span class="font-size-2"></span>
+                        <span class="font-size-3 active"></span>
+                        <span class="font-size-4"></span>
+                        <span class="font-size-5"></span>
+                    </div>
+                    <h3>Aa</h3>
                 </div>
             </div>
             <!--End of Font Size Section-->
@@ -398,7 +406,7 @@
         <div class="card">
             <h2>Crie sua Postagem</h2>
             <p class="text-muted">Preencha os campos abaixo para publicar um post.</p>
-            
+
             <form action="{% url 'postagem' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="input-group">
@@ -420,7 +428,8 @@
             </form>
         </div>
     </div>
-    
+
     <script src="{% static 'assets/js/script.js' %}"></script>
 </body>
+
 </html>
