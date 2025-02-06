@@ -17,7 +17,7 @@ busca
                 border-radius: 5px;
                 padding: 10px 0 0 15px;">
                 <div class="profile-photo">
-                    <img src="{% if encontrado.imagem_perfil %} /images/{{ encontrado.imagem_perfil }} {% else %} {% static '/images/img/user.png' %} {% endif %}" alt="Usuário">
+                    <img src="{% if encontrado.imagem_perfil %} /images/{{ encontrado.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}" alt="Usuário">
                 </div>
                 <div class="col col-md-9 bg-white py-4">
                     <p>{{ encontrado.nome }}</p>
@@ -38,7 +38,7 @@ busca
                 border-radius: 5px;
                 padding: 10px 0 0 0;">
                 <div class="profile-photo" style="margin: 10px 0 0 25px;">
-                    <img src="{% if encontrado.imagem_perfil %} /images/{{ encontrado.imagem_perfil }} {% else %} {% static '/images/img/user.png' %} {% endif %}" alt="Usuário">
+                    <img src="{% if encontrado.imagem_perfil %} /images/{{ encontrado.imagem_perfil }} {% else %} {% static 'assets/images/img/user.png' %} {% endif %}" alt="Usuário">
                 </div>
                 <div class="col col-md-9 bg-white py-4">
                     <p style="margin: 10px 0 0 15px;">{{ encontrado.nome }}</p>
