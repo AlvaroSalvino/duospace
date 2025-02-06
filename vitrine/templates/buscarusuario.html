@@ -1,0 +1,65 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}
+busca
+{% endblock %}
+{% block content %}
+    {% if encontrados %}
+    <ul class="list-group full-w">
+        {% for encontrado in encontrados %}
+        {% if encontrado.id != user.perfil.id %}
+        {% if encontrado in user.perfil.contatos.all %}
+
+        <div class="row border rounded mb-3 py-2 px-2 bg-white">
+            <div class="col col-md-3 py-5" style="background:  {% if encontrado.imagem_capa %} url('/images/{{ encontrado.imagem_capaURL }}') {% else %} hsl(252, 30%, 20%); {% endif %} ;
+                background-position: center;
+                background-size: cover;
+                border-radius: 5px;
+                padding: 10px 0 0 15px;">
+                <div class="profile-photo">
+                    <img src="{% if encontrado.imagem_perfil %} /images/{{ encontrado.imagem_perfil }} {% else %} {% static '/images/img/user.png' %} {% endif %}" alt="Usuário">
+                </div>
+                <div class="col col-md-9 bg-white py-4">
+                    <p>{{ encontrado.nome }}</p>
+                    <div>
+                        <a href="" class="btn btn-info">Acessar</a>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+        </div>
+        {% else %}
+
+        <div class="row border rounded mb-3 py-2 px-2 bg-white">
+            <div class="col col-md-3 py-5" style="background:  {% if encontrado.imagem_capa %} url('/images/{{ encontrado.imagem_capaURL }}') {% else %} hsl(252, 30%, 20%); {% endif %};
+                background-position: center;
+                background-size: cover;
+                border-radius: 5px;
+                padding: 10px 0 0 0;">
+                <div class="profile-photo" style="margin: 10px 0 0 25px;">
+                    <img src="{% if encontrado.imagem_perfil %} /images/{{ encontrado.imagem_perfil }} {% else %} {% static '/images/img/user.png' %} {% endif %}" alt="Usuário">
+                </div>
+                <div class="col col-md-9 bg-white py-4">
+                    <p style="margin: 10px 0 0 15px;">{{ encontrado.nome }}</p>
+                    <div>
+                        <a href="{% url 'exibir' encontrado.id %}" class="btn btn-info">Acessar</a>
+                        <a href="{% url 'convidar' encontrado.id %}" class="btn btn-success">Enviar solicitação</a>
+                    </div>
+                </div>
+            </div>
+            <br>
+            
+        </div>
+
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+    </ul>
+
+    {% else %}
+    <div class="full-w alert alert-warning text-center">
+        <h2>Nenhum resultado encontrado</h2>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -840,3 +840,148 @@ main .container .right {
         display: none;
     }
 }
+
+/* Styling the Post Creation Modal */
+
+.create-post-modal {
+    background: rgba(255, 255, 255, 0.5);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    text-align: center;
+    display: grid;
+    place-items: center;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.create-post-modal .card {
+    background: var(--colour-white);
+    padding: 3rem;
+    border-radius: var(--card-border-radius);
+    width: 50%;
+    box-shadow: 0 0 1rem var(--colour-primary);
+}
+
+.create-post-modal .input-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.create-post-modal .input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.create-post-modal .input-group input,
+.create-post-modal .input-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--colour-secondary);
+    border-radius: var(--card-border-radius);
+    background: var(--colour-light);
+}
+
+.create-post-modal button {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--colour-primary);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: var(--card-border-radius);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.create-post-modal button:hover {
+    background: var(--colour-secondary);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1200px) {
+    .create-post-modal .card {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .create-post-modal .card {
+        width: 92vw;
+    }
+}
+
+.modal-login {
+    background: rgba(255, 255, 255, 0.5);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    text-align: center;
+    display: grid;
+    place-items: center;
+    font-size: 0.9rem;
+}
+
+.modal-login .card {
+    background: var(--colour-white);
+    padding: 3rem;
+    border-radius: var(--card-border-radius);
+    width: 50%;
+    box-shadow: 0 0 1rem var(--colour-primary);
+}
+
+.modal-login .input-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.modal-login .input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.modal-login .input-group input,
+.modal-login .input-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--colour-secondary);
+    border-radius: var(--card-border-radius);
+    background: var(--colour-light);
+}
+
+.modal-login button {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--colour-primary);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: var(--card-border-radius);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.modal-login button:hover {
+    background: var(--colour-secondary);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1200px) {
+    .modal-login .card {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .modal-login .card {
+        width: 92vw;
+    }
+}

@@ -17,6 +17,10 @@ const bg1 = document.querySelector('.bg-1');
 const bg2 = document.querySelector('.bg-2');
 const bg3 = document.querySelector('.bg-3');
 
+// Posts
+const openPostModalBtn = document.querySelector('#open-post-modal');
+const postModal = document.querySelector('.create-post-modal');
+
 // Coding the Messages on the Sidebar
 
 // remove active class from all menu items
@@ -71,6 +75,26 @@ messagesNotification.addEventListener('click', () => {
 
 // End of Coding the Messages section.
 
+// Posts
+
+// Abrir modal de postagem
+const openPostModal = () => {
+    postModal.style.display = 'grid';
+};
+
+// Fechar modal ao clicar fora
+const closePostModal = (e) => {
+    if (e.target.classList.contains('create-post-modal')) {
+        postModal.style.display = 'none';
+    }
+};
+
+// Eventos
+openPostModalBtn.addEventListener('click', openPostModal);
+postModal.addEventListener('click', closePostModal);
+
+// End of Coding the Posts section.
+
 // Theme/Display Customization
 
 // open modal
@@ -103,32 +127,41 @@ fontSizes.forEach(size => {
     size.addEventListener('click', () => {
         removeSizeSelector();
         let fontSize;
+        let fonte;  // Variável para armazenar a fonte
         size.classList.toggle('active');
 
         if(size.classList.contains('font-size-1')) {
             fontSize = '10px';
+            fonte = 'fonte-1';  // Definindo um nome para a fonte
             root.style.setProperty('----sticky-top-left', '5.4rem');
             root.style.setProperty('----sticky-top-right', '5.4rem');
         } else if (size.classList.contains('font-size-2')) {
             fontSize = '13px';
+            fonte = 'fonte-2';
             root.style.setProperty('----sticky-top-left', '5.4rem');
             root.style.setProperty('----sticky-top-right', '-7rem');
         } else if (size.classList.contains('font-size-3')) {
             fontSize = '16px';
+            fonte = 'fonte-3';
             root.style.setProperty('----sticky-top-left', '-2rem');
             root.style.setProperty('----sticky-top-right', '-17rem');
         } else if (size.classList.contains('font-size-4')) {
             fontSize = '19px';
+            fonte = 'fonte-4';
             root.style.setProperty('----sticky-top-left', '-5rem');
             root.style.setProperty('----sticky-top-right', '-25rem');
         } else if (size.classList.contains('font-size-5')) {
             fontSize = '22px';
+            fonte = 'fonte-5';
             root.style.setProperty('----sticky-top-left', '-12rem');
             root.style.setProperty('----sticky-top-right', '-35rem');
         }
 
         // change font size of the root html element
         document.querySelector('html').style.fontSize = fontSize;
+
+        // Enviar a nova fonte para o backend via AJAX
+        enviarFonte(fonte);
     })
 })
 
@@ -144,23 +177,29 @@ const changeActiveColourClass = () => {
 colourPalette.forEach(colour => {
 
     colour.addEventListener('click', () => {
-        let primary;
+        let cor;
         changeActiveColourClass();
 
         if(colour.classList.contains('colour-1')){
             primaryHue = 252;
+            cor = 'cor-1';
         } else if(colour.classList.contains('colour-2')) {
             primaryHue = 52;
+            cor = 'cor-2';
         } else if(colour.classList.contains('colour-3')) {
             primaryHue = 352;
+            cor = 'cor-3';
         } else if(colour.classList.contains('colour-4')) {
             primaryHue = 152;
+            cor = 'cor-4';
         } else if(colour.classList.contains('colour-5')) {
             primaryHue = 202;
+            cor = 'cor-5';
         }
         colour.classList.add('active');
 
         root.style.setProperty('--primary-colour-hue', primaryHue);
+        enviarCor(cor);
     })
 })
 
@@ -169,7 +208,6 @@ let lightColourLightness;
 let whiteColourLightness;
 let darkColourLightness;
 
-
 // change background colour
 const changeBG = () => {
     root.style.setProperty('--light-colour-lightness', lightColourLightness);
@@ -177,39 +215,133 @@ const changeBG = () => {
     root.style.setProperty('--dark-colour-lightness', darkColourLightness);
 }
 
+// Função para enviar a cor para o backend via AJAX
+const enviarCor = (cor) => {
+    fetch('/alterarcor/', {  // Ajuste a URL conforme necessário
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')  // Assumindo que você tem a função getCookie para CSRF
+        },
+        body: `cor=${cor}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Cor alterada para: ', data.cor);
+        } else {
+            console.error('Erro ao alterar cor');
+        }
+    })
+    .catch(error => {
+        console.error('Erro: ', error);
+    });
+}
+
+// Função para enviar a background para o backend via AJAX
+const enviarBackground = (background) => {
+    fetch('/alterarbackground/', {  // Ajuste a URL conforme necessário
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')  // Assumindo que você tem a função getCookie para CSRF
+        },
+        body: `background=${background}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Background alterada para: ', data.background);
+        } else {
+            console.error('Erro ao alterar background');
+        }
+    })
+    .catch(error => {
+        console.error('Erro: ', error);
+    });
+}
+
+// Função para enviar a fonte para o backend via AJAX
+const enviarFonte = (fonte) => {
+    fetch('/alterarfonte/', {  // Ajuste a URL conforme necessário
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')  // Assumindo que você tem a função getCookie para CSRF
+        },
+        body: `fonte=${fonte}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Fonte alterada para: ', data.fonte);
+        } else {
+            console.error('Erro ao alterar a fonte');
+        }
+    })
+    .catch(error => {
+        console.error('Erro: ', error);
+    });
+}
+
+// Função para obter o CSRF token (necessária para requisições POST)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Mudança de tema
+
 bg1.addEventListener('click', () => {
-    // add active class
+    // Troca de cor para o padrão
+    lightColourLightness = '100%';
+    whiteColourLightness = '100%';
+    darkColourLightness = '15%';
+
+    // Altera a cor no banco via AJAX
+    enviarBackground('light');
+
+    // Adiciona classes ativas
     bg1.classList.add('active');
-    // remove active class from the others
     bg2.classList.remove('active');
     bg3.classList.remove('active');
-    // remove customized changes from local storage
-    window.location.reload();
-})
-
+    changeBG();
+});
 
 bg2.addEventListener('click', () => {
     darkColourLightness = '95%';
     whiteColourLightness = '20%';
     lightColourLightness = '15%';
 
-    // add active class
+    // Altera a cor no banco via AJAX
+    enviarBackground('dim');
+
     bg2.classList.add('active');
-    // remove active class from the others
     bg1.classList.remove('active');
     bg3.classList.remove('active');
     changeBG();
-})
+});
 
 bg3.addEventListener('click', () => {
     darkColourLightness = '95%';
     whiteColourLightness = '10%';
     lightColourLightness = '0%';
 
-    // add active class
+    // Altera a cor no banco via AJAX
+    enviarBackground('lights-out');
+
     bg3.classList.add('active');
-    // remove active class from the others
     bg1.classList.remove('active');
     bg2.classList.remove('active');
     changeBG();
-})
+});

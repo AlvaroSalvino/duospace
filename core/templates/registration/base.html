@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>DuoSpace - login</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="DuoSpace">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+</head>
+
+<body style="background: url({% static 'media/img/bg.jpg' %}); background-attachment: fixed; background-repeat: no-repeat; background-size: cover;">
+    <div class="modal-login">
+        <div class="card">
+            <h2 class="log">DuoSpace</h2>
+            <p class="text-muted">Onde momentos e memórias se encontram</p>
+
+            {% block content %}
+            {% endblock %}
+            
+        </div>
+    </div>
+
+</html>

@@ -1,0 +1,22 @@
+{% extends 'registration/base.html' %}
+{% load static %}
+
+{% block content %}
+<form action="{% url 'login' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="input-group">
+        <label for="username">Login</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+
+    <div class="input-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Entrar</button>
+
+    <p class="text-muted">Ainda não tem uma conta?</p>
+    <a href="{% url 'inscrevase' %}">Cadastrar-se</a>
+</form>
+{% endblock %}
