@@ -12,10 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qi*-wop#e8h5ffsgp%3ilwfci@z&sc3@8w%opf!3ev@@$8+1)q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-# ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['duospace.com.br', 'www.duospace.com.br']
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['duospace.com.br', 'www.duospace.com.br']
 
 
 # Application definition
