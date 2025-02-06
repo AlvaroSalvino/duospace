@@ -18,19 +18,19 @@ perfil de {{ user.username }}
                 </div>
                 <div class="card-body">
                     {% if ja_eh_contato %}
-                        <a href="{% url 'desfazer' perfil.id %}">Desfazer amizade</a><br>
+                        <a href="">Desfazer amizade</a><br>
 
                         {% if perfil_logado.usuario.is_superuser %}
                             {% if perfil.usuario.is_superuser %}
-                                <a href="{% url 'retirar_superuser' perfil.id %}">Retirar superuser</a><br>
+                                <a href="">Retirar superuser</a><br>
                             {% else %}
-                                <a href="{% url 'tornar_superuser' perfil.id %}">Tornar superuser</a><br>
+                                <a href="">Tornar superuser</a><br>
                             {% endif %}
 
                             {% if perfil.usuario.is_active %}
-                                <a href="{% url 'bloquear_user' perfil.id %}">Bloquear usuário</a><br>
+                                <a href="">Bloquear usuário</a><br>
                             {% else %}
-                                <a href="{% url 'desbloquear_user' perfil.id %}">Desbloquear usuário</a><br>
+                                <a href="">Desbloquear usuário</a><br>
                             {% endif %}
                         {% endif %}
 

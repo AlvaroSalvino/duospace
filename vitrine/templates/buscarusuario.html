@@ -22,7 +22,7 @@ busca
                 <div class="col col-md-9 bg-white py-4">
                     <p>{{ encontrado.nome }}</p>
                     <div>
-                        <a href="" class="btn btn-info">Acessar</a>
+                        <a href="{% url 'exibir' encontrado.id %}" class="btn btn-info">Acessar</a>
                     </div>
                 </div>
             </div>
