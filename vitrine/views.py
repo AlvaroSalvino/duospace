@@ -12,7 +12,8 @@ from django.core.files.storage import FileSystemStorage
 def index(request):
     user = request.user
     perfil = get_object_or_404(Perfil, usuario=user)
-    
+    notificacoes = Notificacao.objects.filter(perfil_notificado=perfil, lida=False).order_by('-data_criacao')
+
     context = {
         'active_home': 'active',
         'perfis': Perfil.objects.all(),
@@ -20,6 +21,7 @@ def index(request):
         'cor': perfil.cor,
         'fonte': perfil.fonte,
         'background': perfil.background,
+        'notificacoes':notificacoes,
     }
 
     timeline = selecionar_posts(request)
@@ -49,6 +51,15 @@ def selecionar_posts(request):
         posts.extend(list(amigo.posts.all()))
     posts.sort(key=lambda x: x.data_postagem, reverse=True)
     return posts
+
+def numero_notificacoes(request):
+    if request.user.is_authenticated:
+        perfil = request.user.perfil
+        notificacoes_nao_lidas = Notificacao.objects.filter(perfil_notificado=perfil, lida=False).count()
+    else:
+        notificacoes_nao_lidas = 0
+
+    return {'notificacoes_nao_lidas': notificacoes_nao_lidas}
 
 @login_required(login_url='login')
 def buscar_usuario(request):

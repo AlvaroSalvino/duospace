@@ -4,6 +4,10 @@
     display: inline-block;
 }
 
+.like-button {
+    z-index: 999;
+}
+
 .dropdown-menu {
     display: none;
     position: absolute;

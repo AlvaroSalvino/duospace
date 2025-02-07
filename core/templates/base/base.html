@@ -107,7 +107,7 @@
                 <!--End Of Profile Section-->
                 <!--Side Bar Section-->
                 <div class="sidebar">
-                    <a class="menu-item {{active_home}}" href="{% url 'index' %}">
+                    <a class="menu-item {{active_home}}" href="{% url 'index' %}" id="home">
                         <span><i class="uil uil-home"></i></span>
                         <h3>Home</h3>
                     </a>
@@ -116,65 +116,27 @@
                         <h3>Explore</h3>
                     </a>
                     <a class="menu-item" id="notifications">
-                        <span><i class="uil uil-bell"><small class="notification-count">9+</small></i></span>
+                        <span><i class="uil uil-bell">{% if notificacoes_nao_lidas > 0 %}<small class="notification-count">{{ notificacoes_nao_lidas }}{% elif notificacoes_nao_lidas > 9 %}9+{% endif %}</small></i></span>
                         <h3>Notificações</h3>
                         <!--Notification Pop Up Section-->
+                        {% if notificacoes %}
                         <div class="notifications-popup">
+                            {% for notificacao in notificacoes %}
                             <div>
                                 <div class="profile-photo">
                                     <img src="{% static 'images/profile_img-44x44/profile6-44x44.jpg' %}" alt="" />
                                 </div>
                                 <div class="notificaion-body">
-                                    <b>Matthew McConaughey</b> aceitou sua solicitação de amizade.
-                                    <small class="text-muted">Agora</small>
+                                    <b>{{ notificacao.perfil_acionador.nome }}</b> {{ notificacao.get_tipo_display }}
+                                    <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                                    {% if notificacao.post %}
+                                        <a href="">seu post</a>.
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div>
-                                <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile8-44x44.jpg' %}" alt="" />
-                                </div>
-                                <div class="notificaion-body">
-                                    <b>Denzel Washington</b> aceitou sua solicitação de amizade.
-                                    <small class="text-muted">7 minutos atrás</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile9-44x44.webp' %}" alt="" />
-                                </div>
-                                <div class="notificaion-body">
-                                    <b>Martin Scorsese</b> comentou no seu post.
-                                    <small class="text-muted">1 hora atrás</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile10-44x44.jpg' %}" alt="" />
-                                </div>
-                                <div class="notificaion-body">
-                                    <b>Andrew Garfield</b> e <b>372 outras</b> pessoas curtiram seu post.
-                                    <small class="text-muted">1 Dia atrás</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-88x88/profile5-88x88.jpg' %}" alt="" />
-                                </div>
-                                <div class="notificaion-body">
-                                    <b>Netflix</b> comentou em um post em que você foi marcado.
-                                    <small class="text-muted">2 dias atrás</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile11-44x44.webp' %}" alt="" />
-                                </div>
-                                <div class="notificaion-body">
-                                    <b>Henry Cavill</b> enviou uma solicitação de amizade para você
-                                    <small class="text-muted">4 dias atrás</small>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
+                        {% endif %}
                         <!--End of Notification Popup Section-->
                     </a>
                     <a class="menu-item" id="messages-notification">

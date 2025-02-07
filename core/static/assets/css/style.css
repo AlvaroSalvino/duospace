@@ -190,6 +190,7 @@ main .container .left {
     height: max-content;
     position: sticky;
     top: var(--sticky-top-left);
+    z-index: 1;
 }
 
 main .container .left .profile {

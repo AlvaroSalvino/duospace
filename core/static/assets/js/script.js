@@ -1,3 +1,5 @@
+const home = document.querySelector('#home');
+
 // Sidebar
 const menuItems = document.querySelectorAll('.menu-item'); //selects all the divs with the class menu-item
 
@@ -33,15 +35,29 @@ const changeActiveItem = () => {
 menuItems.forEach(item => {
     item.addEventListener('click', () => {
         changeActiveItem();
-        item.classList.add('active'); //adds the class active to the menu-item divs.
+        item.classList.add('active'); // Adiciona a classe active ao item do menu.
         if(item.id != 'notifications') {
-            document.querySelector('.notifications-popup').style.display ='none';
+            document.querySelector('.notifications-popup').style.display = 'none';
         } else {
             document.querySelector('.notifications-popup').style.display = 'block';
             document.querySelector('#notifications .notification-count').style.display = 'none';
         }
     })
-})
+});
+
+// Fechar popup de notificações ao clicar fora
+document.addEventListener('click', (event) => {
+    const notificationsPopup = document.querySelector('.notifications-popup');
+    const notificationsButton = document.querySelector('#notifications');
+    const home = document.querySelector('#home');
+
+    // Verifica se o clique foi fora do botão e do popup
+    if (!notificationsButton.contains(event.target) && !notificationsPopup.contains(event.target)) {
+        notificationsPopup.style.display = 'none';
+        notificationsButton.classList.remove('active'); // Remove a classe 'active' do botão de notificações
+        home.classList.add('active'); // Remove a classe 'active' do botão de notificações
+    }
+});
 
 // End of Coding the Messages on the Sidebar
 
@@ -106,6 +122,8 @@ const openThemeModal = () => {
 const closeThemeModal = (e) => {
     if(e.target.classList.contains('customize-theme')) {
         themeModal.style.display = 'none';
+        home.classList.add('active');
+        theme.classList.remove('active');
     }
 }
 

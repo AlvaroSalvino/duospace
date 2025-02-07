@@ -123,8 +123,37 @@ class Curtida(models.Model):
     class Meta:
         unique_together = ('perfil', 'post')  # Um usuário só pode curtir um post uma vez
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Criar notificação
+        if self.post.perfil != self.perfil:  # Evita que um usuário seja notificado por curtir seu próprio post
+            Notificacao.objects.create(
+                perfil_notificado=self.post.perfil,
+                perfil_acionador=self.perfil,
+                tipo='curtida',
+                post=self.post
+            )
+
 class Comentario(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='comentarios')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comentarios')
     texto = models.TextField()
     data_comentario = models.DateTimeField(auto_now_add=True)
+
+class Notificacao(models.Model):
+    TIPO_CHOICES = (
+        ('curtida', 'Curtida'),
+        ('comentario', 'Comentário'),
+        ('amizade', 'Solicitação de Amizade'),
+    )
+    
+    perfil_notificado = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='notificacoes')
+    perfil_acionador = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='acoes')
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    lida = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.perfil_acionador.nome} {self.get_tipo_display()} seu post."
