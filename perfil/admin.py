@@ -18,6 +18,18 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('titulo', 'perfil__user__username')
     list_filter = ('data_postagem', 'perfil')
     
+class CurtidaAdmin(admin.ModelAdmin):
+    list_display = ('perfil', 'post', 'data_curtida')
+    search_fields = ('perfil__user__username', 'post__titulo')
+    list_filter = ('data_curtida',)
+
+class ComentarioAdmin(admin.ModelAdmin):
+    list_display = ('perfil', 'post', 'texto', 'data_comentario')
+    search_fields = ('perfil__user__username', 'post__titulo', 'texto')
+    list_filter = ('data_comentario',)
+
 admin.site.register(Perfil, PerfilAdmin)
 admin.site.register(Convite, ConviteAdmin)
 admin.site.register(Post, PostAdmin)
+admin.site.register(Curtida, CurtidaAdmin)
+admin.site.register(Comentario, ComentarioAdmin)

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from perfil.models import *
+from django.http import JsonResponse
 from django.contrib import messages
 from django.utils.timesince import timesince
 from django.core.paginator import Paginator
@@ -11,20 +12,23 @@ from django.core.files.storage import FileSystemStorage
 def index(request):
     user = request.user
     perfil = get_object_or_404(Perfil, usuario=user)
+    
     context = {
         'active_home': 'active',
+        'perfis': Perfil.objects.all(),
+        'perfil_logado': perfil,
+        'cor': perfil.cor,
+        'fonte': perfil.fonte,
+        'background': perfil.background,
     }
-    context['perfis'] = Perfil.objects.all()
-    context['perfil_logado'] = request.user.perfil
-    context['cor'] = request.user.perfil.cor
-    context['fonte'] = request.user.perfil.fonte
-    context['background'] = request.user.perfil.background
+
     timeline = selecionar_posts(request)
-    
-    # Adicionar tempo decorrido aos posts
+
+    # Adicionar status de curtida a cada post
     for post in timeline:
-        post.tempo_decorrido = timesince(post.data_postagem)  # Exemplo: "2 horas, 15 minutos"
-        
+        post.tempo_decorrido = timesince(post.data_postagem)
+        post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()  # Verifica se foi curtido
+
     paginator = Paginator(timeline, 15)
     page = request.GET.get('pagina')
 
@@ -34,12 +38,6 @@ def index(request):
         context['timeline'] = paginator.page(1)
         if page is not None:
             messages.add_message(request, messages.INFO, 'A página {} não existe'.format(page))
-    
-    if request.method == "POST":
-        # Verifica e salva a foto se fornecida
-        if 'imagem_perfil' in request.FILES:
-            perfil.imagem_perfil = request.FILES['imagem_perfil']
-            perfil.save()  # Salva no banco de dados
 
     return render(request, 'index.html', context)
 
@@ -143,3 +141,41 @@ def delete_postagem(request, id_postagem):
         messages.add_message(request, messages.INFO, 'Post deletado com sucesso!')
 
     return redirect('index')
+
+@login_required(login_url='login')
+def curtir_post(request, id_postagem):
+    post = Post.objects.get(id=id_postagem)
+    perfil = request.user.perfil
+
+    # Tenta obter ou criar a "curtida"
+    curtida, created = Curtida.objects.get_or_create(perfil=perfil, post=post)
+
+    if not created:
+        curtida.delete()
+        status = 'descurtido'
+    else:
+        status = 'curtido'
+
+    # Corrigir para usar o related_name 'curtidas'
+    return JsonResponse({
+        'status': status,
+        'likes': post.curtidas.count(),
+        'liked': created  # 'liked' será True se o post foi curtido, False se descurtado
+    })
+
+@login_required
+def adicionar_comentario(request, post_id):
+    if request.method == "POST":
+        texto = request.POST.get("texto")
+        if texto.strip():  # Verifica se o texto não está vazio
+            post = get_object_or_404(Post, id=post_id)
+            perfil = request.user.perfil  # Obtém o perfil do usuário autenticado
+
+            comentario = Comentario.objects.create(perfil=perfil, post=post, texto=texto)
+            comentario.save()
+
+            return JsonResponse({"status": "success", "mensagem": "Comentário adicionado com sucesso!"})
+        else:
+            return JsonResponse({"status": "error", "mensagem": "O comentário não pode estar vazio."})
+    
+    return JsonResponse({"status": "error", "mensagem": "Requisição inválida."})

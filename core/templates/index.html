@@ -4,117 +4,7 @@
 home
 {% endblock %}
 {% block styles %}
-<style>
-    /* Estilos gerais */
-    .edit {
-        cursor: pointer;
-        display: inline-block;
-    }
-
-    .dropdown-menu {
-        display: none;
-        position: absolute;
-        top: 2.5rem;
-        right: 0; /* Ajusta para um leve deslocamento à direita */
-        background-color: #fff;
-        border: 1px solid #ddd;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        padding: 10px;
-        z-index: 1000;
-        width: 150px;
-        border-radius: 4px;
-    }
-
-    .dropdown-menu a {
-        display: block;
-        padding: 8px 10px;
-        text-decoration: none;
-        color: #333;
-        border-bottom: 1px solid #ddd;
-        font-size: 14px;
-    }
-
-    .dropdown-menu a:hover {
-        background-color: #f0f0f0;
-    }
-
-    .dropdown-menu.show {
-        display: block;
-    }
-
-    /* Media Query para telas pequenas (celulares) */
-    @media (max-width: 768px) {
-        .dropdown-menu {
-            right: 0; /* Ajusta o menu para ficar à esquerda em telas pequenas */
-            width: 100%; /* Menu ocupa toda a largura */
-        }
-
-        .head .user {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .head .user h3 {
-            font-size: 16px;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .interaction-buttons span {
-            margin: 5px 0;
-        }
-    }
-
-    /* Media Query para tablets */
-    @media (max-width: 1024px) {
-        .dropdown-menu {
-            right: 0; /* Ajuste do menu */
-            width: 130px; /* Ajuste da largura do menu */
-        }
-
-        .head .user {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .head .user h3 {
-            font-size: 18px;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-    }
-
-    /* Media Query para telas grandes (wide screens) */
-    @media (min-width: 1200px) {
-        .dropdown-menu {
-            right: 0; /* Posição original do menu para telas grandes */
-            width: 150px; /* Largura original do menu */
-        }
-
-        .head .user {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-        }
-
-        .head .user h3 {
-            font-size: 20px;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: flex-start;
-        }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'assets/css/index.css' %}">
 {% endblock %}
 {% block content %}
 <!--The Feeds Section-->
@@ -162,7 +52,13 @@ home
         </div>
         <div class="action-buttons">
             <div class="interaction-buttons">
-                <span><i class="uil uil-heart"></i></span>
+                <span class="like-button" data-post-id="{{ post.id }}" style="cursor: pointer;">
+                    {% if post.curtido %}
+                    <span><i class='bx bxs-heart' style='color:#ff0101'></i></span>
+                    {% else %}
+                    <span><i class="uil uil-heart"></i></span>
+                    {% endif %}
+                </span>
                 <span><i class="uil uil-comment-dots"></i></span>
                 <span><i class="uil uil-share-alt"></i></span>
             </div>
@@ -170,7 +66,7 @@ home
                 <span><i class="uil uil-bookmark-full"></i></span>
             </div>
         </div>
-
+        
         <div class="caption">
             <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
         </div>
@@ -182,11 +78,6 @@ home
 <!--End of The Feeds Section-->
 
 {% block scripts %}
-<script>
-    function toggleDropdown(postId) {
-        const dropdown = document.getElementById('dropdown-' + postId);
-        dropdown.classList.toggle('show');
-    }
-</script>
+<script src="{% static 'assets/js/index.js' %}"></script>
 {% endblock %}
 {% endblock %}

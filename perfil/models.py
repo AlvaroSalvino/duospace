@@ -84,6 +84,10 @@ class Post(models.Model):
     imagem = models.ImageField(null=True, blank=True, upload_to='postagem/')
 
     @property
+    def curtida_set_count(self):
+        return self.curtida_set.count()
+    
+    @property
     def imagemURL(self):
         try:
             url = self.imagem.url
@@ -110,3 +114,17 @@ class Post(models.Model):
 
                 # Remover a imagem .heic original
                 os.remove(img_path)
+
+class Curtida(models.Model):
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='curtidas')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='curtidas')
+    data_curtida = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('perfil', 'post')  # Um usuário só pode curtir um post uma vez
+
+class Comentario(models.Model):
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='comentarios')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comentarios')
+    texto = models.TextField()
+    data_comentario = models.DateTimeField(auto_now_add=True)
