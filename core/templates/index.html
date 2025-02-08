@@ -73,15 +73,15 @@ home
             <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
         </div>
         {% if post.comentarios.count == 1 %}
-        <div class="comments text-muted">
+        <div class="comments text-muted open-view-comentario-modal" data-post-id="{{ post.id }}">
             Ver {{ post.comentarios.count }} comentário
         </div>
         {% elif post.comentarios.count > 1 %}
-        <div class="comments text-muted">
+        <div class="comments text-muted open-view-comentario-modal" data-post-id="{{ post.id }}">
             Ver todos os {{ post.comentarios.count }} comentários
         </div>
-        {% else %}
         {% endif %}
+
     </div>
     {% endfor %}
     {% endif %}
@@ -98,17 +98,26 @@ home
             <input type="hidden" id="post-id" name="post_id"> <!-- Campo oculto para armazenar o ID do post -->
 
             <div class="input-group">
-                <label for="texto">Comentário</label>
+                <label for="texto">Comentários</label>
                 <div class="comment-area">
                     <textarea id="texto" name="texto" rows="1" required style="{% if background == 'lights-out' %}
                     color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}"></textarea>
                     <button type="submit" class="btn btn-primary"><i class='bx bx-chevron-up'></i></button>
                 </div>
             </div>
-
         </form>
     </div>
 </div>
+
+<!-- Modal de Visualizar Comentários -->
+<div class="view-comentario-modal">
+    <div class="card">
+        <h3>Comentários</h3>
+        <div class="comentarios">
+        </div>
+    </div>
+</div>
+
 
 {% block scripts %}
 <script src="{% static 'assets/js/index.js' %}"></script>

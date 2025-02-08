@@ -283,8 +283,6 @@ const lerNotificacao = (lida) => {
     .then(data => {
         if (data.status === 'success') {
             console.log('Todas as notificações foram lidas: ', data.lida);
-        } else {
-            console.error('Erro ao ler notificações');
         }
     })
     .catch(error => {

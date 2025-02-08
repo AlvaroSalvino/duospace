@@ -215,3 +215,44 @@
     display: -webkit-box;
     gap: 0.5rem;
 }
+
+/* Modal de Comentários */
+.view-comentario-modal {
+    background: rgba(255, 255, 255, 0.5);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    text-align: center;
+    display: grid;
+    place-items: center;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.view-comentario-modal .card {
+    background: var(--colour-white);
+    padding: 3rem;
+    border-radius: var(--card-border-radius);
+    width: 50%;
+    box-shadow: 0 0 1rem var(--colour-primary);
+}
+
+/* Responsividade */
+@media screen and (max-width: 1200px) {
+    .view-comentario-modal .card {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .view-comentario-modal .card {
+        width: 92vw;
+    }
+}
+
+.comments {
+    cursor: pointer;
+}
