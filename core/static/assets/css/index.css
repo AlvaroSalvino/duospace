@@ -118,3 +118,100 @@
         justify-content: flex-start;
     }
 }
+
+/* Modal de Comentários */
+.create-comentario-modal {
+    background: rgba(255, 255, 255, 0.5);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    text-align: center;
+    display: grid;
+    place-items: center;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.create-comentario-modal .card {
+    background: var(--colour-white);
+    padding: 3rem;
+    border-radius: var(--card-border-radius);
+    width: 50%;
+    box-shadow: 0 0 1rem var(--colour-primary);
+}
+
+.create-comentario-modal .input-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.create-comentario-modal .input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.create-comentario-modal .input-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--colour-secondary);
+    border-radius: 1rem 0 0 1rem;
+    background: var(--colour-light);
+}
+
+.create-comentario-modal button {
+    width: 10%;
+    padding: 0.8rem;
+    background: var(--colour-primary);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 0 1rem 1rem 0;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.create-comentario-modal button:hover {
+    background: var(--colour-secondary);
+}
+
+.create-comentario-modal .comment-area {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Responsividade */
+@media screen and (max-width: 1200px) {
+    .create-comentario-modal .card {
+        width: 80vw;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .create-comentario-modal .card {
+        width: 92vw;
+    }
+}
+
+
+.comentarios {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.comentario {
+    background: var(--colour-white);
+    padding: 5px;
+    margin-bottom: -3px;
+    border: solid;
+    border-width: 1px 1px 1px;
+    border-radius: 4px 4px 0 0;
+    text-align: start;
+    display: -webkit-box;
+    gap: 0.5rem;
+}

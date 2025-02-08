@@ -141,10 +141,24 @@ class Comentario(models.Model):
     texto = models.TextField()
     data_comentario = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None  # Verifica se é um novo comentário antes de salvar
+
+        super().save(*args, **kwargs)
+
+        # Criar notificação apenas se for um novo comentário
+        if is_new and self.post.perfil != self.perfil:
+            Notificacao.objects.create(
+                perfil_notificado=self.post.perfil,
+                perfil_acionador=self.perfil,
+                tipo='comentario',
+                post=self.post
+            )
+
 class Notificacao(models.Model):
     TIPO_CHOICES = (
-        ('curtida', 'Curtida'),
-        ('comentario', 'Comentário'),
+        ('curtida', 'Curtiu'),
+        ('comentario', 'Comentou'),
         ('amizade', 'Solicitação de Amizade'),
     )
     

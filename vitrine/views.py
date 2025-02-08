@@ -12,7 +12,7 @@ from django.core.files.storage import FileSystemStorage
 def index(request):
     user = request.user
     perfil = get_object_or_404(Perfil, usuario=user)
-    notificacoes = Notificacao.objects.filter(perfil_notificado=perfil, lida=False).order_by('-data_criacao')
+    notificacoes = Notificacao.objects.filter(perfil_notificado=perfil).order_by('-data_criacao')
 
     context = {
         'active_home': 'active',
@@ -40,6 +40,11 @@ def index(request):
         context['timeline'] = paginator.page(1)
         if page is not None:
             messages.add_message(request, messages.INFO, 'A página {} não existe'.format(page))
+    
+    if request.method == "POST":
+        if 'imagem_perfil' in request.FILES:
+            perfil.imagem_perfil = request.FILES['imagem_perfil']
+            perfil.save() 
 
     return render(request, 'index.html', context)
 
@@ -190,3 +195,20 @@ def adicionar_comentario(request, post_id):
             return JsonResponse({"status": "error", "mensagem": "O comentário não pode estar vazio."})
     
     return JsonResponse({"status": "error", "mensagem": "Requisição inválida."})
+
+@login_required
+def listar_comentarios(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    comentarios = Comentario.objects.filter(post=post).order_by('-data_comentario')
+
+    comentarios_json = [
+        {
+            "perfil": comentario.perfil.usuario.username,
+            "imagem_perfil": comentario.perfil.imagem_perfil.url if comentario.perfil.imagem_perfil else "/static/assets/images/img/user.png",
+            "texto": comentario.texto,
+            "data": timesince(comentario.data_comentario) + " atrás"
+        }
+        for comentario in comentarios
+    ]
+
+    return JsonResponse({"comentarios": comentarios_json})

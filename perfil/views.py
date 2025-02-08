@@ -68,3 +68,10 @@ def rejeitar(request, convite_id):
     convite.rejeitar()
     messages.add_message(request, messages.INFO, 'Solicitação cancelada.')
     return redirect('index')
+
+def ler_notificacoes(request):
+    if request.method == 'POST':
+        perfil = request.user.perfil
+        perfil.notificacoes.filter(lida=False).update(lida=True)
+        return JsonResponse({'status': 'sucesso', 'mensagem': 'Notificações marcadas como lidas.'})
+    return JsonResponse({'status': 'erro', 'mensagem': 'Requisição inválida.'}, status=400)

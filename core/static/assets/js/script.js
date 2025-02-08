@@ -1,5 +1,3 @@
-const home = document.querySelector('#home');
-
 // Sidebar
 const menuItems = document.querySelectorAll('.menu-item'); //selects all the divs with the class menu-item
 
@@ -32,30 +30,47 @@ const changeActiveItem = () => {
     })
 }
 
+// Seleção dos itens do menu
+const notificationsButton = document.querySelector('#notifications');
+const notificationsPopup = document.querySelector('.notifications-popup');
+const notificationCount = document.querySelector('#notifications .notification-count');
+
+// Adiciona evento de clique para cada item do menu
 menuItems.forEach(item => {
-    item.addEventListener('click', () => {
+    item.addEventListener('click', (event) => {
         changeActiveItem();
-        item.classList.add('active'); // Adiciona a classe active ao item do menu.
-        if(item.id != 'notifications') {
-            document.querySelector('.notifications-popup').style.display = 'none';
-        } else {
-            document.querySelector('.notifications-popup').style.display = 'block';
-            document.querySelector('#notifications .notification-count').style.display = 'none';
+        item.classList.add('active');
+
+        if (item.id !== 'notifications') {
+            notificationsPopup.style.display = 'none';
         }
-    })
+    });
 });
 
-// Fechar popup de notificações ao clicar fora
-document.addEventListener('click', (event) => {
-    const notificationsPopup = document.querySelector('.notifications-popup');
-    const notificationsButton = document.querySelector('#notifications');
-    const home = document.querySelector('#home');
+// Evento para exibir ou ocultar o pop-up de notificações
+notificationsButton.addEventListener('click', (event) => {
+    event.stopPropagation(); // Impede que o clique feche o pop-up imediatamente
 
-    // Verifica se o clique foi fora do botão e do popup
+    if (notificationsPopup.style.display === 'block') {
+        notificationsPopup.style.display = 'none';
+        notificationsButton.classList.remove('active');
+    } else {
+        notificationsPopup.style.display = 'block';
+        notificationsButton.classList.add('active');
+        if (notificationCount) {
+            notificationCount.style.display = 'none';
+        }
+    }
+});
+
+// Fechar o pop-up de notificações ao clicar fora dele
+document.addEventListener('click', (event) => {
+    const home = document.querySelector('#home');
+    lerNotificacao();
     if (!notificationsButton.contains(event.target) && !notificationsPopup.contains(event.target)) {
         notificationsPopup.style.display = 'none';
-        notificationsButton.classList.remove('active'); // Remove a classe 'active' do botão de notificações
-        home.classList.add('active'); // Remove a classe 'active' do botão de notificações
+        home.classList.add('active');
+        notificationsButton.classList.remove('active');
     }
 });
 
@@ -122,8 +137,6 @@ const openThemeModal = () => {
 const closeThemeModal = (e) => {
     if(e.target.classList.contains('customize-theme')) {
         themeModal.style.display = 'none';
-        home.classList.add('active');
-        theme.classList.remove('active');
     }
 }
 
@@ -255,6 +268,30 @@ const enviarCor = (cor) => {
         console.error('Erro: ', error);
     });
 }
+
+// Função para enviar a background para o backend via AJAX
+const lerNotificacao = (lida) => {
+    fetch('/ler_notificacoes/', {  // Ajuste a URL conforme necessário
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')  // Assumindo que você tem a função getCookie para CSRF
+        },
+        body: `background=${lida}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Todas as notificações foram lidas: ', data.lida);
+        } else {
+            console.error('Erro ao ler notificações');
+        }
+    })
+    .catch(error => {
+        console.error('Erro: ', error);
+    });
+}
+
 
 // Função para enviar a background para o backend via AJAX
 const enviarBackground = (background) => {

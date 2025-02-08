@@ -289,7 +289,7 @@ main .container .left .profile {
 
 .left .notifications-popup {
     position: absolute;
-    top: 0;
+    top: 25%;
     left: 110%;
     width: 30rem;
     background: var(--colour-white );

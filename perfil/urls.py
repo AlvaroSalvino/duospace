@@ -8,4 +8,5 @@ urlpatterns = [
     path('perfil/<int:perfil_id>/convidar/', convidar, name='convidar'),
     path('perfil/<int:convite_id>/aceitar/', aceitar, name='aceitar'),
     path('perfil/<int:convite_id>/rejeitar/', rejeitar, name='rejeitar'),
+    path('ler_notificacoes/', ler_notificacoes, name='ler_notificacoes'),
 ]

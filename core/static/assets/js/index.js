@@ -1,3 +1,57 @@
+document.addEventListener("DOMContentLoaded", function () {
+    // Abrir o modal e definir o post_id
+    document.querySelectorAll(".open-comentario-modal").forEach(button => {
+        button.addEventListener("click", function () {
+            let postId = this.getAttribute("data-post-id");
+            document.getElementById("post-id").value = postId; // Define o ID do post no campo oculto
+            document.querySelector(".create-comentario-modal").style.display = "block";
+        });
+    });
+
+    // Fechar o modal ao clicar fora dele (opcional)
+    document.querySelector(".create-comentario-modal").addEventListener("click", function (e) {
+        if (e.target === this) {
+            this.style.display = "none";
+        }
+    });
+
+    // Enviar o comentário via AJAX
+    document.getElementById("comentario-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let postId = document.getElementById("post-id").value;
+        let texto = document.getElementById("texto").value;
+        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        if (texto.trim() === "") {
+            alert("O comentário não pode estar vazio.");
+            return;
+        }
+
+        fetch(`/post/${postId}/comentar/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": csrfToken
+            },
+            body: `texto=${encodeURIComponent(texto)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                document.getElementById("texto").value = ""; // Limpa o campo de texto
+                document.querySelector(".create-comentario-modal").style.display = "none"; // Fecha o modal
+            } else {
+                alert(data.mensagem);
+            }
+        })
+        .catch(error => console.error("Erro ao enviar o comentário:", error));
+    });
+});
+
+
+// End of Coding the Comentários section.
+
 // Dropdawm Do post
 function toggleDropdown(postId) {
     const dropdown = document.getElementById('dropdown-' + postId);
@@ -67,6 +121,46 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
             const postId = button.dataset.postId;
             toggleLike(postId, button);
+        });
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Seleciona todos os botões de abrir comentários
+    document.querySelectorAll(".open-comentario-modal").forEach(button => {
+        button.addEventListener("click", function () {
+            let postId = this.getAttribute("data-post-id"); // Obtém o ID do post clicado
+            document.getElementById("post-id").value = postId; // Define o ID do post no campo oculto
+
+            // Faz a requisição AJAX para buscar os comentários do post
+            fetch(`/comentarios/${postId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    let comentariosDiv = document.querySelector(".comentarios");
+                    comentariosDiv.innerHTML = ""; // Limpa os comentários antigos
+                    
+                    if (data.comentarios.length > 0) {
+                        data.comentarios.forEach(comentario => {
+                            let commentHTML = `
+                                <div class="comentario">
+                                    <div class="profile-photo" style="margin-bottom: .5rem;">
+                                        <img src="${comentario.imagem_perfil}" alt="Usuário">
+                                    </div>
+                                    <strong>${comentario.perfil}</strong> <small style="font-size: 0.6rem;"> ${comentario.data}</small> <br>
+                                    ${comentario.texto}
+                                </div>
+                            `;
+                            comentariosDiv.innerHTML += commentHTML;
+                        });
+                    } else {
+                        comentariosDiv.innerHTML = "<p>Sem comentários ainda.</p>";
+                    }
+                })
+                .catch(error => console.error("Erro ao buscar comentários:", error));
+            
+            // Abre o modal (caso tenha uma função para isso)
+            document.querySelector(".create-comentario-modal").style.display = "block";
         });
     });
 });

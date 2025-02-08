@@ -59,7 +59,9 @@ home
                     <span><i class="uil uil-heart"></i></span>
                     {% endif %}
                 </span>
-                <span><i class="uil uil-comment-dots"></i></span>
+                <span class="open-comentario-modal" data-post-id="{{ post.id }}" style="cursor: pointer;">
+                    <i class="uil uil-comment-dots"></i>
+                </span>                
                 <span><i class="uil uil-share-alt"></i></span>
             </div>
             <div class="bookmark">
@@ -70,12 +72,43 @@ home
         <div class="caption">
             <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
         </div>
-        <!-- <div class="comments text-muted">View All 532 comments</div> -->
+        {% if post.comentarios.count == 1 %}
+        <div class="comments text-muted">
+            Ver {{ post.comentarios.count }} comentário
+        </div>
+        {% elif post.comentarios.count > 1 %}
+        <div class="comments text-muted">
+            Ver todos os {{ post.comentarios.count }} comentários
+        </div>
+        {% else %}
+        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
 </div>
+
 <!--End of The Feeds Section-->
+<!-- Modal de Criar Comentários -->
+<div class="create-comentario-modal">
+    <div class="card">
+        <div class="comentarios">
+        </div>
+        <form id="comentario-form" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="post-id" name="post_id"> <!-- Campo oculto para armazenar o ID do post -->
+
+            <div class="input-group">
+                <label for="texto">Comentário</label>
+                <div class="comment-area">
+                    <textarea id="texto" name="texto" rows="1" required style="{% if background == 'lights-out' %}
+                    color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}"></textarea>
+                    <button type="submit" class="btn btn-primary"><i class='bx bx-chevron-up'></i></button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
 
 {% block scripts %}
 <script src="{% static 'assets/js/index.js' %}"></script>

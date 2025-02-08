@@ -118,27 +118,28 @@
                     <a class="menu-item" id="notifications">
                         <span><i class="uil uil-bell">{% if notificacoes_nao_lidas > 0 %}<small class="notification-count">{{ notificacoes_nao_lidas }}{% elif notificacoes_nao_lidas > 9 %}9+{% endif %}</small></i></span>
                         <h3>Notificações</h3>
-                        <!--Notification Pop Up Section-->
-                        {% if notificacoes %}
-                        <div class="notifications-popup">
-                            {% for notificacao in notificacoes %}
-                            <div>
-                                <div class="profile-photo">
-                                    <img src="{% static 'images/profile_img-44x44/profile6-44x44.jpg' %}" alt="" />
-                                </div>
-                                <div class="notificaion-body">
-                                    <b>{{ notificacao.perfil_acionador.nome }}</b> {{ notificacao.get_tipo_display }}
-                                    <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
-                                    {% if notificacao.post %}
-                                        <a href="">seu post</a>.
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                        <!--End of Notification Popup Section-->
                     </a>
+                    <!-- Notification Pop Up Section -->
+                    {% if notificacoes %}
+                    <div class="notifications-popup">
+                        {% for notificacao in notificacoes %}
+                        <div class="notification-item">
+                            {% if notificacao.post %}
+                            <a href="">
+                                <div class="profile-photo">
+                                    <img src="{% if notificacao.perfil_acionador.imagem_perfil %} /images/{{ notificacao.perfil_acionador.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}" alt="">
+                                </div>
+                                <div class="notification-body">
+                                    <b>{{ notificacao.perfil_acionador.nome }}</b> {{ notificacao.get_tipo_display }} seu post
+                                    <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                                </div>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <!-- End of Notification Popup Section -->                    
                     <a class="menu-item" id="messages-notification">
                         <span><i class="uil uil-envelope"><small class="notification-count">6+</small></i></span>
                         <h3>Mensagens</h3>
