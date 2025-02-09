@@ -98,6 +98,41 @@ const toggleLike = (postId, button) => {
     });
 };
 
+// Função para curtir/descurtir uma postagem
+const toggleBookmark = (postId, button) => {
+    fetch(`/marcar/${postId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: `post_id=${postId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const heartIcon = button.querySelector('i');
+
+            // Atualizar o ícone de coração
+            if (data.marcado) {
+                heartIcon.classList.remove('uil-bookmark-full');
+                heartIcon.classList.add('bxs-bookmark-star');
+                heartIcon.style.color = '';
+            } else {
+                heartIcon.classList.remove('bxs-bookmark-star');
+                heartIcon.classList.add('uil-bookmark-full');
+                heartIcon.style.color = '';
+            }
+
+        } else {
+            console.error('Erro ao marcar a postagem');
+        }
+    })
+    .catch(error => {
+        console.error('Erro: ', error);
+    });
+};
+
 // Função para obter o CSRF token
 function getCookie(name) {
     let cookieValue = null;
@@ -121,6 +156,17 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
             const postId = button.dataset.postId;
             toggleLike(postId, button);
+        });
+    });
+});
+
+// Adicionar evento de clique aos botões de marcar
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.bookmark-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            const postId = button.dataset.postId;
+            toggleBookmark(postId, button);
         });
     });
 });

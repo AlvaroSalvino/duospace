@@ -30,6 +30,7 @@ def index(request):
     for post in timeline:
         post.tempo_decorrido = timesince(post.data_postagem)
         post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()  # Verifica se foi curtido
+        post.marcado = Marcador.objects.filter(perfil=perfil, post=post).exists  # Verifica se foi marcado
 
     paginator = Paginator(timeline, 15)
     page = request.GET.get('pagina')
@@ -185,8 +186,8 @@ def delete_postagem(request, id_postagem):
     return redirect('index')
 
 @login_required(login_url='login')
-def curtir_post(request, id_postagem):
-    post = Post.objects.get(id=id_postagem)
+def curtir_post(request, post_id):
+    post = Post.objects.get(id=post_id)
     perfil = request.user.perfil
 
     # Tenta obter ou criar a "curtida"
@@ -238,3 +239,72 @@ def listar_comentarios(request, post_id):
     ]
 
     return JsonResponse({"comentarios": comentarios_json})
+
+@login_required(login_url='login')
+def marcar_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    perfil = get_object_or_404(Perfil, usuario=request.user)
+
+    marcador, created = Marcador.objects.get_or_create(perfil=perfil, post=post)
+
+    if not created:
+        marcador.delete()
+        status = 'desmarcado'
+    else:
+        status = 'marcado'
+
+    return JsonResponse({
+        'status': status,
+        'marcado': created,
+    })
+
+@login_required(login_url='login')
+def marcados(request):
+    user = request.user
+    perfil = get_object_or_404(Perfil, usuario=user)
+    notificacoes = Notificacao.objects.filter(perfil_notificado=perfil).order_by('-data_criacao')
+
+    context = {
+        'active_marcados': 'active',
+        'perfis': Perfil.objects.all(),
+        'perfil_logado': perfil,
+        'cor': perfil.cor,
+        'fonte': perfil.fonte,
+        'background': perfil.background,
+        'notificacoes':notificacoes,
+    }
+
+    timeline = selecionar_posts_marcados(request)
+
+    # Adicionar status de curtida a cada post
+    for post in timeline:
+        post.tempo_decorrido = timesince(post.data_postagem)
+        post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()  # Verifica se foi curtido
+        post.marcado = Marcador.objects.filter(perfil=perfil, post=post).exists  # Verifica se foi marcado
+
+    paginator = Paginator(timeline, 15)
+    page = request.GET.get('pagina')
+
+    try:
+        context['timeline'] = paginator.page(page)
+    except Exception:
+        context['timeline'] = paginator.page(1)
+        if page is not None:
+            messages.add_message(request, messages.INFO, 'A página {} não existe'.format(page))
+    
+    if request.method == "POST":
+        if 'imagem_perfil' in request.FILES:
+            perfil.imagem_perfil = request.FILES['imagem_perfil']
+            perfil.save() 
+
+    return render(request, 'marcados.html', context)
+
+def selecionar_posts_marcados(request):
+    perfil_logado = request.user.perfil
+    marcadores = Marcador.objects.filter(perfil=perfil_logado)  # Filtra os posts marcados pelo usuário
+    posts = [marcador.post for marcador in marcadores]  # Obtém os posts marcados
+
+    # Ordena os posts pela data de postagem (mais recentes primeiro)
+    posts.sort(key=lambda x: x.data_postagem, reverse=True)
+
+    return posts

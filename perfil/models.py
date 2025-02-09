@@ -170,3 +170,11 @@ class Notificacao(models.Model):
 
     def __str__(self):
         return f"{self.perfil_acionador.nome} {self.get_tipo_display()} seu post."
+
+class Marcador(models.Model):
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='marcados')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='marcados')
+    data_marcada = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('perfil', 'post')  # Um usuário só pode curtir um post uma vez
