@@ -36,16 +36,16 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: `texto=${encodeURIComponent(texto)}`
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                document.getElementById("texto").value = ""; // Limpa o campo de texto
-                document.querySelector(".create-comentario-modal").style.display = "none"; // Fecha o modal
-            } else {
-                alert(data.mensagem);
-            }
-        })
-        .catch(error => console.error("Erro ao enviar o comentário:", error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    document.getElementById("texto").value = ""; // Limpa o campo de texto
+                    document.querySelector(".create-comentario-modal").style.display = "none"; // Fecha o modal
+                } else {
+                    alert(data.mensagem);
+                }
+            })
+            .catch(error => console.error("Erro ao enviar o comentário:", error));
     });
 });
 
@@ -68,34 +68,34 @@ const toggleLike = (postId, button) => {
         },
         body: `post_id=${postId}`
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status) {
-            const heartIcon = button.querySelector('i');
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                const heartIcon = button.querySelector('i');
 
-            // Atualizar o ícone de coração
-            if (data.liked) {
-                heartIcon.classList.remove('uil-heart');
-                heartIcon.classList.add('bxs-heart');
-                heartIcon.style.color = '#ff0101';
+                // Atualizar o ícone de coração
+                if (data.liked) {
+                    heartIcon.classList.remove('uil-heart');
+                    heartIcon.classList.add('bxs-heart');
+                    heartIcon.style.color = '#ff0101';
+                } else {
+                    heartIcon.classList.remove('bxs-heart');
+                    heartIcon.classList.add('uil-heart');
+                    heartIcon.style.color = '';
+                }
+
+                // // Atualizar contador de curtidas se existir
+                // const likeCount = button.querySelector('.like-count');
+                // if (likeCount) {
+                //     likeCount.textContent = data.likes;
+                // }
             } else {
-                heartIcon.classList.remove('bxs-heart');
-                heartIcon.classList.add('uil-heart');
-                heartIcon.style.color = '';
+                console.error('Erro ao curtir a postagem');
             }
-
-            // Atualizar contador de curtidas se existir
-            const likeCount = button.querySelector('.like-count');
-            if (likeCount) {
-                likeCount.textContent = data.likes;
-            }
-        } else {
-            console.error('Erro ao curtir a postagem');
-        }
-    })
-    .catch(error => {
-        console.error('Erro: ', error);
-    });
+        })
+        .catch(error => {
+            console.error('Erro: ', error);
+        });
 };
 
 // Função para curtir/descurtir uma postagem
@@ -108,29 +108,29 @@ const toggleBookmark = (postId, button) => {
         },
         body: `post_id=${postId}`
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status) {
-            const heartIcon = button.querySelector('i');
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                const heartIcon = button.querySelector('i');
 
-            // Atualizar o ícone de coração
-            if (data.marcado) {
-                heartIcon.classList.remove('uil-bookmark-full');
-                heartIcon.classList.add('bxs-bookmark-star');
-                heartIcon.style.color = '';
+                // Atualizar o ícone de coração
+                if (data.marcado) {
+                    heartIcon.classList.remove('uil-bookmark-full');
+                    heartIcon.classList.add('bxs-bookmark-star');
+                    heartIcon.style.color = '';
+                } else {
+                    heartIcon.classList.remove('bxs-bookmark-star');
+                    heartIcon.classList.add('uil-bookmark-full');
+                    heartIcon.style.color = '';
+                }
+
             } else {
-                heartIcon.classList.remove('bxs-bookmark-star');
-                heartIcon.classList.add('uil-bookmark-full');
-                heartIcon.style.color = '';
+                console.error('Erro ao marcar a postagem');
             }
-
-        } else {
-            console.error('Erro ao marcar a postagem');
-        }
-    })
-    .catch(error => {
-        console.error('Erro: ', error);
-    });
+        })
+        .catch(error => {
+            console.error('Erro: ', error);
+        });
 };
 
 // Função para obter o CSRF token
@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(data => {
                     let comentariosDiv = document.querySelector(".comentarios");
                     comentariosDiv.innerHTML = ""; // Limpa os comentários antigos
-                    
+
                     if (data.comentarios.length > 0) {
                         data.comentarios.forEach(comentario => {
                             let commentHTML = `
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 })
                 .catch(error => console.error("Erro ao buscar comentários:", error));
-            
+
             // Abre o modal (caso tenha uma função para isso)
             document.querySelector(".create-comentario-modal").style.display = "block";
             document.querySelector(".create-comentario-modal").style.alignContent = "center"; // Para centralizar o conteúdo em múltiplas linhas, se houver

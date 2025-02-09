@@ -66,13 +66,23 @@ notificationsButton.addEventListener('click', (event) => {
 // Fechar o pop-up de notificações ao clicar fora dele
 document.addEventListener('click', (event) => {
     const home = document.querySelector('#home');
+    const salvos = document.querySelector('#salvos');
+    
     lerNotificacao();
+    
     if (!notificationsButton.contains(event.target) && !notificationsPopup.contains(event.target)) {
         notificationsPopup.style.display = 'none';
-        home.classList.add('active');
         notificationsButton.classList.remove('active');
+
+        // Verifica se a URL contém "/salvos" e define a classe active corretamente
+        if (window.location.pathname === "/salvos" && salvos) {
+            salvos.classList.add('active');
+        } else if (home) {
+            home.classList.add('active');
+        }
     }
 });
+
 
 // End of Coding the Messages on the Sidebar
 
