@@ -1,0 +1,123 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}
+home
+{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'assets/css/index.css' %}">
+{% endblock %}
+{% block content %}
+<!--The Feeds Section-->
+<div class="feeds">
+    <!--Feed One-->
+    {% if post %}
+    <div class="feed">
+        <div class="head">
+            <div class="user">
+                <div class="profile-photo">
+                    <img src="{% if post.perfil.imagem_perfil %} /images/{{ post.perfil.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}"
+                        alt="Usuário">
+                </div>
+                <div class="ingo">
+                    <h3>{{ post.titulo }}</h3>
+                    <small>{{ post.data_postagem }} - <span class="capitalise">{{ post.tempo_decorrido }}
+                            atrás</span></small>
+                </div>
+            </div>
+            {% if perfil_logado.usuario.is_superuser %}
+            <!-- Edit button and Dropdown Menu -->
+            <span class="edit">
+                <i class="uil uil-ellipsis-h" onclick="toggleDropdown({{ post.id }})"></i>
+            </span>
+            <div class="dropdown-menu" id="dropdown-{{ post.id }}">
+                <!-- <a href="">Editar</a> -->
+                <a href="{% url 'delete_postagem' post.id %}">Excluir</a>
+            </div>
+            {% elif post.perfil == perfil_logado %}
+            <!-- Edit button and Dropdown Menu -->
+            <span class="edit">
+                <i class="uil uil-ellipsis-h" onclick="toggleDropdown({{ post.id }})"></i>
+            </span>
+            <div class="dropdown-menu" id="dropdown-{{ post.id }}">
+                <!-- <a href="">Editar</a> -->
+                <a href="{% url 'delete_postagem' post.id %}">Excluir</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="photo">
+            {% if post.imagem %}
+            <img src="/images/{{ post.imagem }}" alt="Post imagem">
+            {% endif %}
+        </div>
+        <div class="action-buttons">
+            <div class="interaction-buttons">
+                <span class="like-button" data-post-id="{{ post.id }}" style="cursor: pointer;">
+                    {% if post.curtido %}
+                    <span><i class='bx bxs-heart' style='color:#ff0101'></i></span>
+                    {% else %}
+                    <span><i class="uil uil-heart"></i></span>
+                    {% endif %}
+                </span>
+                <span class="open-comentario-modal" data-post-id="{{ post.id }}" style="cursor: pointer;">
+                    <i class="uil uil-comment-dots"></i>
+                </span>                
+                <span><i class="uil uil-share-alt"></i></span>
+            </div>
+            <div class="bookmark">
+                <span><i class="uil uil-bookmark-full"></i></span>
+            </div>
+        </div>
+        
+        <div class="caption">
+            <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
+        </div>
+        {% if post.comentarios.count == 1 %}
+        <div class="comments text-muted open-view-comentario-modal" data-post-id="{{ post.id }}">
+            Ver {{ post.comentarios.count }} comentário
+        </div>
+        {% elif post.comentarios.count > 1 %}
+        <div class="comments text-muted open-view-comentario-modal" data-post-id="{{ post.id }}">
+            Ver todos os {{ post.comentarios.count }} comentários
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+</div>
+
+<!--End of The Feeds Section-->
+<!-- Modal de Criar Comentários -->
+<div class="create-comentario-modal">
+    <div class="card">
+        <div class="comentarios">
+        </div>
+        <form id="comentario-form" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="post-id" name="post_id"> <!-- Campo oculto para armazenar o ID do post -->
+
+            <div class="input-group">
+                <label for="texto">Comentários</label>
+                <div class="comment-area">
+                    <textarea id="texto" name="texto" rows="1" required style="{% if background == 'lights-out' %}
+                    color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}"></textarea>
+                    <button type="submit" class="btn btn-primary"><i class='bx bx-chevron-up'></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Visualizar Comentários -->
+<div class="view-comentario-modal">
+    <div class="card">
+        <h3>Comentários</h3>
+        <div class="comentarios">
+        </div>
+    </div>
+</div>
+
+
+{% block scripts %}
+<script src="{% static 'assets/js/index.js' %}"></script>
+{% endblock %}
+{% endblock %}

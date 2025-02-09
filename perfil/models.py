@@ -4,7 +4,6 @@ from PIL import Image
 import pillow_heif
 import os
 
-
 class Perfil(models.Model):
     nome = models.CharField(max_length=255, null=False)
     telefone = models.CharField(max_length=15, null= False)

@@ -149,6 +149,32 @@ def exibir_perfil(request, perfil_id):
     return render(request, 'perfil.html', context)
 
 @login_required(login_url='login')
+def ver_post(request, post_id):
+    post = Post.objects.get(id=post_id)
+    user = request.user
+    perfil = get_object_or_404(Perfil, usuario=user)
+    notificacoes = Notificacao.objects.filter(perfil_notificado=perfil).order_by('-data_criacao')
+
+    
+    post.tempo_decorrido = timesince(post.data_postagem)
+    post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()  # Verifica se foi curtido
+
+    if request.method == "POST":
+        if 'imagem_perfil' in request.FILES:
+            perfil.imagem_perfil = request.FILES['imagem_perfil']
+            perfil.save() 
+
+    context = {
+        'post':post,
+        'perfil_logado': perfil,
+        'cor': perfil.cor,
+        'fonte': perfil.fonte,
+        'background': perfil.background,
+        'notificacoes':notificacoes,
+    }
+    return render(request, 'post.html', context)
+
+@login_required(login_url='login')
 def delete_postagem(request, id_postagem):
     post = Post.objects.get(id=id_postagem)
 

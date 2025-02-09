@@ -123,15 +123,18 @@
                     {% if notificacoes %}
                     <div class="notifications-popup">
                         {% for notificacao in notificacoes %}
-                        <div class="notification-item">
+                        <div class="notification-item" style="margin-bottom: 1rem;">
                             {% if notificacao.post %}
-                            <a href="">
+                            <a href="{% url 'ver_post' notificacao.post.id %}" style="{% if background == 'lights-out' %}
+                                color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}">
                                 <div class="profile-photo">
                                     <img src="{% if notificacao.perfil_acionador.imagem_perfil %} /images/{{ notificacao.perfil_acionador.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}" alt="">
                                 </div>
+                                <strong>{{ notificacao.perfil_acionador.nome }}</strong>
+                                {{ notificacao.get_tipo_display }} seu post <br>
+                                <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
                                 <div class="notification-body">
-                                    <b>{{ notificacao.perfil_acionador.nome }}</b> {{ notificacao.get_tipo_display }} seu post
-                                    <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                                    
                                 </div>
                             </a>
                             {% endif %}

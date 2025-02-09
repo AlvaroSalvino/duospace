@@ -211,6 +211,8 @@ main .container .left .profile {
 
 .left .sidebar a {
     text-decoration: none;
+    display: -webkit-box;
+    gap: .5rem;
 }
 
 .left .sidebar .menu-item {
@@ -309,6 +311,10 @@ main .container .left .profile {
     position: absolute;
     left: -0.6rem;
     transform: rotate(45deg);
+}
+
+.left .notification-item:hover {
+    background-color: var(--colour-light);
 }
 
 .left .notification-popup > div {
@@ -787,8 +793,13 @@ main .container .right {
     .sidebar h3 {
         display: none;
     }
+
     .left .btn {
         display: none;
+    }
+
+    .left .sidebar a {
+        display: block;
     }
 
     .customize-theme .card {
@@ -834,6 +845,10 @@ main .container .right {
         display: absolute;
         top: 1.3rem;
         left: calc(20rem - 0.6rem);
+        display: block;
+    }
+
+    .left .sidebar a {
         display: block;
     }
 
