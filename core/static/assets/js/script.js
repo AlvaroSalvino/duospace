@@ -75,7 +75,7 @@ document.addEventListener('click', (event) => {
         notificationsButton.classList.remove('active');
 
         // Verifica se a URL contém "/salvos" e define a classe active corretamente
-        if (window.location.pathname === "/salvos" && salvos) {
+        if (window.location.pathname === "/salvos/" && salvos) {
             salvos.classList.add('active');
         } else if (home) {
             home.classList.add('active');

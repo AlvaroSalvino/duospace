@@ -3,7 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('', index, name='index'),
-    path('salvos', marcados, name='marcados'),
+    path('salvos/', marcados, name='marcados'),
     path('encontrar/', buscar_usuario, name='buscar_usuario'),
     path('postagem/', postagem, name='postagem'),
     path('perfil/<int:perfil_id>/', exibir_perfil, name='exibir'),
