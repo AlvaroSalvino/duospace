@@ -13,4 +13,5 @@ urlpatterns = [
     path('post/<int:post_id>/comentar/', adicionar_comentario, name='adicionar_comentario'),
     path('comentarios/<int:post_id>/', listar_comentarios, name='listar_comentarios'),
     path('post/<int:post_id>/', ver_post, name='ver_post'),
+    path('carregar-posts/', carregar_posts, name='carregar_posts'),
 ]

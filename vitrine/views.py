@@ -32,7 +32,7 @@ def index(request):
         post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()  # Verifica se foi curtido
         post.marcado = Marcador.objects.filter(perfil=perfil, post=post).exists  # Verifica se foi marcado
 
-    paginator = Paginator(timeline, 15)
+    paginator = Paginator(timeline, 5)
     page = request.GET.get('pagina')
 
     try:
@@ -49,6 +49,47 @@ def index(request):
 
     return render(request, 'index.html', context)
 
+@login_required(login_url='login')
+def carregar_posts(request):
+    if request.method == "GET":
+        pagina = int(request.GET.get('pagina', 1))  # Obtém a página a ser carregada
+        posts_por_pagina = 5
+
+        user = request.user
+        perfil = get_object_or_404(Perfil, usuario=user)
+        timeline = selecionar_posts(request)
+
+        for post in timeline:
+            post.tempo_decorrido = timesince(post.data_postagem)
+            post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()
+            post.marcado = Marcador.objects.filter(perfil=perfil, post=post).exists()
+
+        paginator = Paginator(timeline, posts_por_pagina)
+        try:
+            posts_pagina = paginator.page(pagina)
+        except:
+            return JsonResponse({"posts": []})  # Retorna uma lista vazia se a página não existir
+
+        posts_lista = []
+        for post in posts_pagina:
+            posts_lista.append({
+                "id": post.id,
+                "titulo": post.titulo,
+                "tempo_decorrido": post.tempo_decorrido,
+                "data_postagem": post.data_postagem.strftime("%d/%m/%Y %H:%M"),
+                "imagem": post.imagem.url if post.imagem else None,
+                "perfil": {
+                    "nome": post.perfil.nome,
+                    "imagem_perfil": post.perfil.imagem_perfil.url if post.perfil.imagem_perfil else None
+                },
+                "texto": post.text,
+                "curtido": post.curtido,
+                "marcado": post.marcado,
+                "comentarios_count": post.comentarios.count(),
+            })
+
+        return JsonResponse({"posts": posts_lista})
+    
 def selecionar_posts(request):
     perfil_logado = request.user.perfil
     amigos = perfil_logado.contatos.all()
