@@ -32,7 +32,7 @@ def index(request):
         post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()  # Verifica se foi curtido
         post.marcado = Marcador.objects.filter(perfil=perfil, post=post).exists  # Verifica se foi marcado
 
-    paginator = Paginator(timeline, 15)
+    paginator = Paginator(timeline, 50)
     page = request.GET.get('pagina')
 
     try:
