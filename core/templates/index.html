@@ -58,6 +58,8 @@ home
                     {% else %}
                     <span><i class="uil uil-heart"></i></span>
                     {% endif %}
+                    {% if post.curtida.count %} curtida
+                    {% endif %}
                 </span>
                 <span class="open-comentario-modal" data-post-id="{{ post.id }}" style="cursor: pointer;">
                     <i class="uil uil-comment-dots"></i>
