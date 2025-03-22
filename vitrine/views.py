@@ -52,7 +52,7 @@ def index(request):
 def selecionar_posts(request):
     perfil_logado = request.user.perfil
     amigos = perfil_logado.contatos.all()
-    posts = list(perfil_logado.posts.all())  # Adiciona os posts do próprio usuário
+    posts = list(perfil_logado.posts.all())
     for amigo in amigos:
         posts.extend(list(amigo.posts.all()))
     posts.sort(key=lambda x: x.data_postagem, reverse=True)
@@ -96,56 +96,48 @@ def postagem(request):
         try:
             titulo = request.POST.get('titulo')
             texto = request.POST.get('texto')
-            imagem = request.FILES['imagem']
+            imagem = request.FILES.get('imagem')  # Usando .get() para evitar KeyError se não houver imagem
+
+            # Verificar se ao menos um campo foi preenchido
+            if not (titulo or imagem):
+                messages.add_message(request, messages.INFO, 'Algum campo deve ser preenchido.')
+                return redirect('index')
+
             perfil = request.user.perfil
 
-            postagem_valida = True
-            if len(titulo) <= 0:
-                messages.add_message(request, messages.INFO, 'O campo de título deve ser preenchido.')
-                postagem_valida = False
-            if len(texto) <= 0:
-                messages.add_message(request, messages.INFO, 'O campo de texto deve ser preenchido.')
-                postagem_valida = False
-            if not postagem_valida:
-                return redirect('index')
-            else:
-                # Formatação da imagem
+            # Se imagem foi enviada, trata a imagem
+            if imagem:
                 file_system = FileSystemStorage()
                 file_name = file_system.save(imagem.name, imagem)
-                # Salvando no banco de dados
+                # Criar postagem com imagem
                 Post.objects.create(titulo=titulo, text=texto, perfil=perfil, imagem=file_name)
-                messages.add_message(request, messages.INFO, 'Postagem publicada.')
-
-        except Exception:
-            titulo = request.POST.get('titulo')
-            texto = request.POST.get('texto')
-
-            postagem_valida = True
-            if len(titulo) <= 0:
-                messages.add_message(request, messages.INFO, 'O campo de título deve ser preenchido.')
-                postagem_valida = False
-            if len(texto) <= 0:
-                messages.add_message(request, messages.INFO, 'O campo de texto deve ser preenchido.')
-                postagem_valida = False
-            if not postagem_valida:
-                return redirect('index')
             else:
-                perfil = request.user.perfil
+                # Criar postagem sem imagem
                 Post.objects.create(titulo=titulo, text=texto, perfil=perfil)
-                messages.add_message(request, messages.INFO, 'Postagem publicada.')
+
+            messages.add_message(request, messages.INFO, 'Postagem publicada.')
+
+        except Exception as e:
+            # Se houver algum erro, enviar uma mensagem para o usuário (opcional)
+            messages.add_message(request, messages.ERROR, 'Erro ao publicar a postagem.')
+            print(f"Erro: {e}")
 
     return redirect('index')
 
 @login_required(login_url='login')
 def exibir_perfil(request, perfil_id):
+    perfil = Perfil.objects.get(id=perfil_id)
     context = {}
+    context['cor_perfil'] = perfil.cor
     context['cor'] = request.user.perfil.cor
+    context['fonte_perfil'] = perfil.fonte
     context['fonte'] = request.user.perfil.fonte
+    context['background_perfil'] = perfil.background
     context['background'] = request.user.perfil.background
     context['perfil'] = Perfil.objects.get(id=perfil_id)
     context['perfil_logado'] = perfil_logado = request.user.perfil
     context['ja_eh_contato'] = context['perfil_logado'].contatos.filter(id=context['perfil'].id)
-    context['timeline'] = context['perfil'].posts.all() 
+    context['timeline'] = context['perfil'].posts.all().order_by('-data_postagem')
 
     return render(request, 'perfil.html', context)
 
@@ -174,6 +166,35 @@ def ver_post(request, post_id):
         'notificacoes':notificacoes,
     }
     return render(request, 'post.html', context)
+
+@login_required(login_url='login')
+def ver_post_comentario(request, comentario_id):
+    comentario = Comentario.objects.get(id=comentario_id)  # Obtém o comentário pelo ID
+    post = comentario.post  # Obtém o post relacionado ao comentário
+    user = request.user
+    perfil = get_object_or_404(Perfil, usuario=user)
+    notificacoes = Notificacao.objects.filter(perfil_notificado=perfil).order_by('-data_criacao')
+
+    # Adiciona os atributos do post
+    post.tempo_decorrido = timesince(post.data_postagem)
+    post.curtido = Curtida.objects.filter(perfil=perfil, post=post).exists()  # Verifica se foi curtido
+
+    # Se houver uma imagem no perfil, atualiza
+    if request.method == "POST":
+        if 'imagem_perfil' in request.FILES:
+            perfil.imagem_perfil = request.FILES['imagem_perfil']
+            perfil.save()
+
+    context = {
+        'post': post,  # Passa o post para o template
+        'perfil_logado': perfil,
+        'cor': perfil.cor,
+        'fonte': perfil.fonte,
+        'background': perfil.background,
+        'notificacoes': notificacoes,
+    }
+    return render(request, 'post.html', context)
+
 
 @login_required(login_url='login')
 def delete_postagem(request, id_postagem):
@@ -206,6 +227,28 @@ def curtir_post(request, post_id):
         'liked': created  # 'liked' será True se o post foi curtido, False se descurtado
     })
 
+@login_required(login_url='login')
+def curtir_comentario(request, comentario_id):
+    comentario = Comentario.objects.get(id=comentario_id)
+    perfil = request.user.perfil
+
+    # Tenta obter ou criar a "curtida"
+    curtida, created = Curtida_comentario.objects.get_or_create(perfil=perfil, comentario=comentario)
+
+    if not created:
+        curtida.delete()
+        status = 'descurtido'
+    else:
+        status = 'curtido'
+
+    # Corrigir para usar o related_name 'curtidas'
+    return JsonResponse({
+        'status': status,
+        'likes': comentario.curtidas_comentarios.count(),
+        'liked': created
+    })
+
+
 @login_required
 def adicionar_comentario(request, post_id):
     if request.method == "POST":
@@ -228,17 +271,24 @@ def listar_comentarios(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     comentarios = Comentario.objects.filter(post=post).order_by('-data_comentario')
 
+    # Obter o perfil do usuário logado
+    usuario_logado = request.user.perfil
+
     comentarios_json = [
         {
             "perfil": comentario.perfil.usuario.username,
             "imagem_perfil": comentario.perfil.imagem_perfil.url if comentario.perfil.imagem_perfil else "/static/assets/images/img/user.png",
             "texto": comentario.texto,
-            "data": timesince(comentario.data_comentario) + " atrás"
+            "id": comentario.id,
+            "data": timesince(comentario.data_comentario) + " atrás",
+            # Adicionar se o comentário foi curtido pelo usuário logado
+            "curtido": Curtida_comentario.objects.filter(perfil=usuario_logado, comentario=comentario).exists()
         }
         for comentario in comentarios
     ]
 
     return JsonResponse({"comentarios": comentarios_json})
+
 
 @login_required(login_url='login')
 def marcar_post(request, post_id):

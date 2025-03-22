@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="pt-br" style="
 {% if background == 'light' %}
---light-colour-lightness: 100%; --white-colour-lightness: 100%; --dark-colour-lightness: 15%;
+--light-colour-lightness: 95%; --white-colour-lightness: 100%; --dark-colour-lightness: 15%;
 {% elif background == 'dim' %}
 --light-colour-lightness: 15%; --white-colour-lightness: 20%; --dark-colour-lightness: 95%;
 {% else %}
@@ -125,13 +125,25 @@
                         {% for notificacao in notificacoes %}
                         <div class="notification-item" style="margin-bottom: 1rem;">
                             {% if notificacao.post %}
-                            <a href="{% url 'ver_post' notificacao.post.id %}" style="{% if background == 'lights-out' %}
-                                color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}">
+                            <a href="{% url 'ver_post' notificacao.post.id %}" style="{% if background == 'lights-out' %} color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}">
                                 <div class="profile-photo">
                                     <img src="{% if notificacao.perfil_acionador.imagem_perfil %} /images/{{ notificacao.perfil_acionador.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}" alt="">
                                 </div>
                                 <strong>{{ notificacao.perfil_acionador.nome }}</strong>
                                 {{ notificacao.get_tipo_display }} seu post <br>
+                                <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                                <div class="notification-body">
+                                    
+                                </div>
+                            </a>
+                            {% endif %}
+                            {% if notificacao.comentario %}
+                            <a href="{% url 'ver_post_comentario' notificacao.comentario.id %}" style="{% if background == 'lights-out' %} color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}">
+                                <div class="profile-photo">
+                                    <img src="{% if notificacao.perfil_acionador.imagem_perfil %} /images/{{ notificacao.perfil_acionador.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}" alt="">
+                                </div>
+                                <strong>{{ notificacao.perfil_acionador.nome }}</strong>
+                                {{ notificacao.get_tipo_display }} seu comentario <br>
                                 <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
                                 <div class="notification-body">
                                     
@@ -380,7 +392,7 @@
                 {% csrf_token %}
                 <div class="input-group">
                     <label for="titulo">Título</label>
-                    <input type="text" id="titulo" name="titulo" required style="
+                    <input type="text" id="titulo" name="titulo" style="
                     {% if background == 'lights-out' %}
                     color: white;
                     {% elif background == 'dim' %}
@@ -391,7 +403,7 @@
 
                 <div class="input-group">
                     <label for="texto">Texto</label>
-                    <textarea id="texto" name="texto" rows="4" required style="
+                    <textarea id="texto" name="texto" rows="4" style="
                     {% if background == 'lights-out' %}
                     color: white;
                     {% elif background == 'dim' %}

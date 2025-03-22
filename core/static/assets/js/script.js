@@ -50,6 +50,7 @@ menuItems.forEach(item => {
 // Evento para exibir ou ocultar o pop-up de notificações
 notificationsButton.addEventListener('click', (event) => {
     event.stopPropagation(); // Impede que o clique feche o pop-up imediatamente
+    lerNotificacao();
 
     if (notificationsPopup.style.display === 'block') {
         notificationsPopup.style.display = 'none';
@@ -67,9 +68,7 @@ notificationsButton.addEventListener('click', (event) => {
 document.addEventListener('click', (event) => {
     const home = document.querySelector('#home');
     const salvos = document.querySelector('#salvos');
-    
-    lerNotificacao();
-    
+        
     if (!notificationsButton.contains(event.target) && !notificationsPopup.contains(event.target)) {
         notificationsPopup.style.display = 'none';
         notificationsButton.classList.remove('active');

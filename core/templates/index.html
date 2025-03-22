@@ -61,6 +61,7 @@ home
                     {% if post.curtida.count %} curtida
                     {% endif %}
                 </span>
+                <small style="font-size: 0.9rem;"><sup class="like-count">{{ post.curtidas.count }}</sup></small>
                 <span class="open-comentario-modal" data-post-id="{{ post.id }}" style="cursor: pointer;">
                     <i class="uil uil-comment-dots"></i>
                 </span>                

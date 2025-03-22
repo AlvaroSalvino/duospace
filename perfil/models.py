@@ -76,8 +76,8 @@ class Convite(models.Model):
         self.delete()
 
 class Post(models.Model):
-    titulo = models.CharField(max_length=250)
-    text = models.TextField()
+    titulo = models.CharField(max_length=250, null=True, blank=True)
+    text = models.TextField(null=True, blank=True)
     data_postagem = models.DateTimeField(auto_now=True)
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='posts')
     imagem = models.ImageField(null=True, blank=True, upload_to='postagem/')
@@ -134,6 +134,7 @@ class Curtida(models.Model):
                 post=self.post
             )
 
+
 class Comentario(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='comentarios')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comentarios')
@@ -154,6 +155,28 @@ class Comentario(models.Model):
                 post=self.post
             )
 
+
+class Curtida_comentario(models.Model):
+    perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='curtidas_comentarios')
+    comentario = models.ForeignKey(Comentario, on_delete=models.CASCADE, related_name='curtidas_comentarios')
+    data_curtida = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('perfil', 'comentario')  # Um usuário só pode curtir um comentario uma vez
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Criar notificação
+        if self.comentario.perfil != self.perfil:  # Evita que um usuário seja notificado por curtir seu próprio comentario
+            Notificacao.objects.create(
+                perfil_notificado=self.comentario.perfil,
+                perfil_acionador=self.perfil,
+                tipo='curtida',
+                comentario=self.comentario
+            )
+
+
 class Notificacao(models.Model):
     TIPO_CHOICES = (
         ('curtida', 'Curtiu'),
@@ -165,11 +188,16 @@ class Notificacao(models.Model):
     perfil_acionador = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='acoes')
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
+    comentario = models.ForeignKey(Comentario, on_delete=models.CASCADE, null=True, blank=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
     lida = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.perfil_acionador.nome} {self.get_tipo_display()} seu post."
+        if self.post:
+            return f"{self.perfil_acionador.nome} {self.get_tipo_display()} seu post."
+        if self.comentario:
+            return f"{self.perfil_acionador.nome} {self.get_tipo_display()} seu comentario."
+
 
 class Marcador(models.Model):
     perfil = models.ForeignKey(Perfil, on_delete=models.CASCADE, related_name='marcados')

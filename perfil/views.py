@@ -56,6 +56,26 @@ def convidar(request, perfil_id):
     return redirect('index')
 
 @login_required(login_url='login')
+def desfazer_amizade(request, perfil_id):
+    try:
+        # Obtém o perfil do usuário que está sendo removido da lista de contatos
+        perfil_a_remover = Perfil.objects.get(id=perfil_id)
+        perfil_logado = request.user.perfil
+        
+        # Verifica se o perfil a ser removido está na lista de contatos
+        if perfil_a_remover in perfil_logado.contatos.all():
+            perfil_logado.desfazer_amizade(perfil_a_remover)
+            messages.add_message(request, messages.INFO, f'Amizade com {perfil_a_remover.nome} desfeita.')
+        else:
+            messages.add_message(request, messages.INFO, 'Este perfil não é seu amigo.')
+
+    except Perfil.DoesNotExist:
+        messages.add_message(request, messages.INFO, 'Perfil não encontrado.')
+
+    return redirect('index')
+
+
+@login_required(login_url='login')
 def aceitar(request, convite_id):
     convite = Convite.objects.get(id=convite_id)
     messages.add_message(request, messages.INFO, 'Convite aceito para {}.'.format(convite.solicitante.nome))

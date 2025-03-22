@@ -1,163 +1,544 @@
-{% extends 'base/base.html' %}
 {% load static %}
-{% block title %}
-perfil de {{ user.username }}
-{% endblock %}
-{% block content %}
-<main class="mt-5 index">
-    <div class="row container">
-        <section class="col col-sm-12 col-md-3 col-lg-3 col-xl-3 mt-4 opcoes-do-usuario">
-            <div class="card">
-                <div class="card-header center-center" style="background: {{ perfil.cor }};;" data-toggle="tooltip"
-                    data-placement="bottom" title="Alterar foto do perfil">
+<!DOCTYPE html>
+<html lang="pt-br" style="
+{% if background_perfil == 'light' %}
+--light-colour-lightness: 95%; --white-colour-lightness: 100%; --dark-colour-lightness: 15%;
+{% elif background_perfil == 'dim' %}
+--light-colour-lightness: 15%; --white-colour-lightness: 20%; --dark-colour-lightness: 95%;
+{% else %}
+--light-colour-lightness: 0%; --white-colour-lightness: 10%; --dark-colour-lightness: 95%;
+{% endif %}
 
-                    <img src="{% if perfil.imagem_perfil %} /images/{{ perfil.imagem_perfil }}
-                    {% else %} {% static 'images/img/user.png' %} {% endif %}" alt="Usuário" width="100%"
-                        class="img-fluid img-thumbnail"><br>
-                    <p class="text-white">{{ perfil.nome }}</p>
-                </div>
-                <div class="card-body">
-                    {% if ja_eh_contato %}
-                        <a href="">Desfazer amizade</a><br>
+{% if fonte_perfil == 'fonte-1' %}
+----sticky-top-left: 5.4rem; ----sticky-top-right: 5.4rem; font-size: 10px;
+{% elif fonte_perfil == 'fonte-2' %}
+----sticky-top-left: 5.4rem; ----sticky-top-right: -7rem; font-size: 13px;
+{% elif fonte_perfil == 'fonte-3' %}
+----sticky-top-left: -2rem; ----sticky-top-right: -17rem; font-size: 16px;
+{% elif fonte_perfil == 'fonte-4' %}
+----sticky-top-left: -5rem; ----sticky-top-right: -25rem; font-size: 19px;
+{% else %}
+----sticky-top-left: -12rem; ----sticky-top-right: -35rem; font-size: 22px;
+{% endif %}
 
-                        {% if perfil_logado.usuario.is_superuser %}
-                            {% if perfil.usuario.is_superuser %}
-                                <a href="">Retirar superuser</a><br>
-                            {% else %}
-                                <a href="">Tornar superuser</a><br>
-                            {% endif %}
+{% if cor_perfil == 'cor-1' %}
+--primary-colour-hue: 252;
+{% elif cor_perfil == 'cor-2' %}
+--primary-colour-hue: 52;
+{% elif cor_perfil == 'cor-3' %}
+--primary-colour-hue: 352;
+{% elif cor_perfil == 'cor-4' %}
+--primary-colour-hue: 152;
+{% else %}
+--primary-colour-hue: 202;
+{% endif %}
+;">
 
-                            {% if perfil.usuario.is_active %}
-                                <a href="">Bloquear usuário</a><br>
-                            {% else %}
-                                <a href="">Desbloquear usuário</a><br>
-                            {% endif %}
-                        {% endif %}
+<head>
+    <meta charset="UTF-8">
+    <title>DuoSpace - Perfil</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="DuoSpace">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-                    {% else %}
-                        <a href="{% url 'convidar' perfil.id %}">Convidar</a>
-                    {% endif %}
-                </div>
+    {% block styles %}
+    {% endblock %}
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <script src="{% static 'assets/js/script.js' %}"></script>
+    <script src="{% static 'assets/js/index.js' %}"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+
+    <!--------Navigation Section---------->
+
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <a href="{% url 'index' %}" id="link-logo">
+                    <h2 class="log">
+                        DuoSpace
+                    </h2>
+                </a>
             </div>
-        </section>
-
-
-        <div class="timeline col col-sm-12 col-md-6 mt-4">
-            <div class="container bg-white py-3 border rounded">
-                <ul class="list-group mb-2">
-                    <li class="list-group-item"><em>e-mail: {{ perfil.email }}</em></li>
-                    <li class="list-group-item">Fone: {{ perfil.telefone }}</li>
-                    <li class="list-group-item">Empresa: {{ perfil.nome_empresa }}</li>
-                </ul>
-                {% if ja_eh_contato %}
-                <div class="alert alert-success">
-                    <p> Vocês já estão conectados</p>
-                </div>
-                {% endif %}
-                {% if perfil.usuario.is_active == False %}
-                <div class="alert alert-danger">
-                    <p>Este perfil encontra-se bloqueado</p>
-                </div>
-                {% endif %}
-            </div>
-
-
-            {% if timeline %}
-            {% for post in timeline %}
-            <div class="card post-index my-4" style="max-width: 100%;">
-                <div class="no-gutters">
-                    <div class="card-header" style="{% if post.perfil.imagem_capa %} background: url('/images/{{ post.perfil.imagem_capa }}'); {% else %} background: url('{% static 'images/img/bg01.jpg' %}'); {% endif %} 
-                                            background-repeat: no-repeat;
-                                            background-size: cover; 
-                                            background-position: center;">
-                        <img src="{% if post.perfil.imagem_perfil %} /images/{{ post.perfil.imagem_perfil }} {% else %} {% static 'images/img/user.png' %} {% endif %}"
-                            width="100" alt="Usuário" class="img-thumbnail">
-                        <p class="text-white">{{ post.perfil.nome }}</p>
+            <form method="POST" action="{% url 'buscar_usuario' %}" class="search-bar">
+                {% csrf_token %}
+                <i class="uil uil-search"></i>
+                <input type="search" name="busca" placeholder="Pesquise por pessoas que usam o DuoSpace...">
+            </form>
+            <div class="create">
+                <label class="btn btn-primary" for="create post" id="open-post-modal">Publicar</label>
+                <form action="" method="post" enctype="multipart/form-data" id="upload-avatar">
+                    {% csrf_token %}
+                    <div for="imagem_perfil" class="profile-photo">
+                        <label for="imagem_perfil">
+                            <img src="{% if perfil_logado.imagem_perfil %}/images/{{ perfil_logado.imagem_perfil }}{% else %}{% static 'assets/images/img/user.png' %}{% endif %}"
+                                alt="Foto de perfil" id="preview-imagem" style="cursor: pointer;">
+                        </label>
                     </div>
-                    <div class="card-body pb-4">
-                        <h5 class="card-title">{{ post.titulo }}</h5>
-                        <p class="card-text">
-                            {{ post.text }}
-                            {% if post.imagem %}
-                            <img src="/images/{{ post.imagem }}" alt="Post imagem"
-                                class="img-fluid full-w border rounded mt-2">
-                            {% endif %}
-                        </p>
-                        <p class="card-text"><small class="text-muted">{{ post.data_postagem }}</small> 
-                        {% if perfil_logado.usuario.is_superuser %}
-                        <a class="btn btn-danger text-white float-right" href="">Deletar</a>
-                        {% endif %}
-                        </p>
-                    </div>
-                </div>
+                    <input type="file" id="imagem_perfil" name="imagem_perfil" style="display: none;"
+                        onchange="document.getElementById('upload-avatar').submit();">
+                </form>
             </div>
-            {% endfor %}
-            {% endif %}
         </div>
+    </nav>
+    <!--------End of Navigation Section---------->
+    <!-----------Main----------->
 
-        <aside class="col col-sm-12 col-md-12 col-lg-3 col-xl-3 mt-4">
-            <div class="bg-white card">
-                <div class="card-header text-white" style="background: {{ perfil_logado.cor }};">
-                    <h3 class="text-center">Convites enviados</h3>
-                </div>
-                <div class="card-body px-0 py-0">
-                    {% if perfil_logado.convites_feitos.all %}
-
-                    <ul class="list-group">
-                        <p class="text-center px-1 pt-3">
-                            você possui <span
-                                class="badge badge-secondary">{{ perfil_logado.convites_feitos.count }}</span>
-                            convite{{ perfil_logado.convites_feitos.count|pluralize }}
+    <main>
+        <div class="container">
+            <!--Left Section-->
+            <div class="left">
+                <!--Profile Section-->
+                <a class="profile">
+                    <div class="profile-photo">
+                        <img src="{% if perfil_logado.imagem_perfil %} /images/{{ perfil_logado.imagem_perfil }}
+                        {% else %} {% static 'assets/images/img/user.png' %} {% endif %}" alt="" />
+                    </div>
+                    <div class="handle">
+                        <h4>{{ perfil_logado.nome }}</h4>
+                        <p class="text-muted">
+                            @{{ user.username }}
                         </p>
-                        {% for convite in perfil_logado.convites_feitos.all %}
-                        <a class="list-group-item list-group-item-action list-group-item-light full-w text-center"
-                            href="{% url 'exibir' convite.convidado.id %}">
-                            {{ convite.convidado.nome }}
-                        </a>
-                        <li class="list-group-item text-center">
-                            <a href=""
-                                class="float-center btn btn-danger full-w">cancelar</a></li>
+                    </div>
+                </a>
+                <!--End Of Profile Section-->
+                <!--Side Bar Section-->
+                <div class="sidebar">
+                    <a class="menu-item {{active_home}}" href="{% url 'index' %}" id="home">
+                        <span><i class="uil uil-home"></i></span>
+                        <h3>Home</h3>
+                    </a>
+                    <a class="menu-item">
+                        <span><i class="uil uil-compass"></i></span>
+                        <h3>Explore</h3>
+                    </a>
+                    <a class="menu-item" id="notifications">
+                        <span><i class="uil uil-bell">{% if notificacoes_nao_lidas > 0 %}<small
+                                    class="notification-count">{{ notificacoes_nao_lidas }}{% endif %}</small></i></span>
+                        <h3>Notificações</h3>
+                    </a>
+                    <!-- Notification Pop Up Section -->
+                    {% if notificacoes %}
+                    <div class="notifications-popup">
+                        {% for notificacao in notificacoes %}
+                        <div class="notification-item" style="margin-bottom: 1rem;">
+                            {% if notificacao.post %}
+                            <a href="{% url 'ver_post' notificacao.post.id %}" style="{% if background == 'lights-out' %} color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}">
+                                <div class="profile-photo">
+                                    <img src="{% if notificacao.perfil_acionador.imagem_perfil %} /images/{{ notificacao.perfil_acionador.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}"
+                                        alt="">
+                                </div>
+                                <strong>{{ notificacao.perfil_acionador.nome }}</strong>
+                                {{ notificacao.get_tipo_display }} seu post <br>
+                                <small class="text-muted">{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                                <div class="notification-body">
+
+                                </div>
+                            </a>
+                            {% endif %}
+                        </div>
                         {% endfor %}
-                    </ul>
+                    </div>
+                    {% endif %}
+                    <!-- End of Notification Popup Section -->
+                    <a class="menu-item" id="messages-notification">
+                        <span><i class="uil uil-envelope"><small class="notification-count">6+</small></i></span>
+                        <h3>Mensagens</h3>
+                    </a>
+                    <a href="{% url 'marcados' %}" class="menu-item {{active_marcados}}" id="salvos">
+                        <span><i class="uil uil-bookmark"></i></span>
+                        <h3>Marcadores</h3>
+                    </a>
+                    <a class="menu-item">
+                        <span><i class="uil uil-chart-line"></i></span>
+                        <h3>Analytics</h3>
+                    </a>
+                    <a class="menu-item" id="theme">
+                        <span><i class="uil uil-palette"></i></span>
+                        <h3>Tema</h3>
+                    </a>
+                    <a class="menu-item">
+                        <span><i class="uil uil-setting"></i></span>
+                        <h3>Settings</h3>
+                    </a>
+                </div>
+                <!--End Of Sidebar Section-->
+                <a href="{% url 'deslogar' %}" class="btn btn-primary">Sair do DuoSpace</a>
+            </div>
+            <!--End Of Left Section-->
+            <!--Middle Section-->
+            <div class="middle">
+                <!--Styling The Shorts Stories Section-->
+                <div class="stories" style="display: none;">
+                    <div class="story">
+                        <div class="profile-photo">
+                            <img src="{% if perfil_logado.imagem_perfil %} /images/{{ perfil_logado.imagem_perfil }}
+                            {% else %} {% static 'images/img/user.png' %} {% endif %}" alt="">
+                        </div>
+                        <p class="name">Your Story</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-44x44/profile2-44x44.jpg' %}" alt="">
+                        </div>
+                        <p class="name">Brad Pitt</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-44x44/profile3-44x44.jpg' %}" alt="">
+                        </div>
+                        <p class="name">Anitta</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-44x44/profile6-44x44.jpg' %}" alt="">
+                        </div>
+                        <p class="name">Matthew McConaug...</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-44x44/profile4-44x44.webp' %}" alt="">
+                        </div>
+                        <p class="name">Margot Robbie</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-44x44/profile7-44x44.jpg' %}" alt="">
+                        </div>
+                        <p class="name">Viola Davis</p>
+                    </div>
+                </div>
+                <!--End Of The Shorts Stories Section-->
+                <!--The Feeds Section-->
+                <div class="feeds">
+                    <!--Feed One-->
+                    {% if timeline %}
+                    {% for post in timeline %}
+                    <div class="feed">
+                        <div class="head">
+                            <div class="user">
+                                <div class="profile-photo">
+                                    <img src="{% if post.perfil.imagem_perfil %} /images/{{ post.perfil.imagem_perfil }} {% else %} {% static '/assets/images/img/user.png' %} {% endif %}"
+                                        alt="Usuário">
+                                </div>
+                                <div class="ingo">
+                                    <h3>{{ post.titulo }}</h3>
+                                    <small>{{ post.data_postagem }} - <span class="capitalise">{{ post.tempo_decorrido }}
+                                            atrás</span></small>
+                                </div>
+                            </div>
+                            {% if perfil_logado.usuario.is_superuser %}
+                            <!-- Edit button and Dropdown Menu -->
+                            <span class="edit">
+                                <i class="uil uil-ellipsis-h" onclick="toggleDropdown({{ post.id }})"></i>
+                            </span>
+                            <div class="dropdown-menu" id="dropdown-{{ post.id }}">
+                                <!-- <a href="">Editar</a> -->
+                                <a href="{% url 'delete_postagem' post.id %}">Excluir</a>
+                            </div>
+                            {% elif post.perfil == perfil_logado %}
+                            <!-- Edit button and Dropdown Menu -->
+                            <span class="edit">
+                                <i class="uil uil-ellipsis-h" onclick="toggleDropdown({{ post.id }})"></i>
+                            </span>
+                            <div class="dropdown-menu" id="dropdown-{{ post.id }}">
+                                <!-- <a href="">Editar</a> -->
+                                <a href="{% url 'delete_postagem' post.id %}">Excluir</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="photo">
+                            {% if post.imagem %}
+                            <img src="/images/{{ post.imagem }}" alt="Post imagem">
+                            {% endif %}
+                        </div>
+                        <div class="action-buttons">
+                            <div class="interaction-buttons">
+                                <span class="like-button" data-post-id="{{ post.id }}" style="cursor: pointer;">
+                                    {% if post.curtido %}
+                                    <span><i class='bx bxs-heart' style='color:#ff0101'></i></span>
+                                    {% else %}
+                                    <span><i class="uil uil-heart"></i></span>
+                                    {% endif %}
+                                    {% if post.curtida.count %} curtida
+                                    {% endif %}
+                                </span>
+                                <small style="font-size: 0.9rem;"><sup class="like-count">{{ post.curtidas.count }}</sup></small>
+                                <span class="open-comentario-modal" data-post-id="{{ post.id }}"
+                                    style="cursor: pointer;">
+                                    <i class="uil uil-comment-dots"></i>
+                                </span>
+                                <span><i class="uil uil-share-alt"></i></span>
+                            </div>
+                            <div class="bookmark">
+                                <span class="bookmark-button" data-post-id="{{ post.id }}" style="cursor: pointer;">
+                                    {% if post.marcado %}
+                                    <span><i class='bx bxs-bookmark-star'></i></span>
+                                    {% else %}
+                                    <span><i class="uil uil-bookmark-full"></i></span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="caption">
+                            <p><b>{{ post.perfil.nome }}</b> {{ post.text }}
+                        </div>
+                        {% if post.comentarios.count == 1 %}
+                        <div class="comments text-muted open-view-comentario-modal" data-post-id="{{ post.id }}">
+                            Ver {{ post.comentarios.count }} comentário
+                        </div>
+                        {% elif post.comentarios.count > 1 %}
+                        <div class="comments text-muted open-view-comentario-modal" data-post-id="{{ post.id }}">
+                            Ver todos os {{ post.comentarios.count }} comentários
+                        </div>
+                        {% endif %}
+
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!--End of The Feeds Section-->
+                <!-- Modal de Criar Comentários -->
+                <div class="create-comentario-modal">
+                    <div class="card">
+                        <div class="comentarios">
+                        </div>
+                        <form id="comentario-form" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" id="post-id" name="post_id">
+                            <!-- Campo oculto para armazenar o ID do post -->
+
+                            <div class="input-group">
+                                <label for="texto">Comentários</label>
+                                <div class="comment-area">
+                                    <textarea id="texto" name="texto" rows="1" required
+                                        style="{% if background == 'lights-out' %} color: white;{% elif background == 'dim' %}color: white;{% else %}{% endif %}"></textarea>
+                                    <button type="submit" class="btn btn-primary"><i
+                                            class='bx bx-chevron-up'></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal de Visualizar Comentários -->
+                <div class="view-comentario-modal">
+                    <div class="card">
+                        <h3>Comentários</h3>
+                        <div class="comentarios">
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <!--End of Middle Section-->
+            <!--Right Section-->
+            <div class="right">
+                <!--Start of Messages-->
+                <div class="messages" style="display: none;">
+                    <div class="heading">
+                        <h4>Messages</h4><i class="uil uil-edit"></i>
+                    </div>
+                    <!--Search Bar-->
+                    <div class="search-bar">
+                        <i class="uil uil-search"></i>
+                        <input type="search" placeholder="Search message..." id="message-search">
+                    </div>
+                    <!--End of Search Bar-->
+                    <!--Messages Category-->
+                    <div class="category">
+                        <h6 class="active">Primary</h6>
+                        <h6>General</h6>
+                        <h6 class="message-requests">Requests(7)</h6>
+                    </div>
+                    <!--End of Messages Category-->
+                    <!--Message One-->
+                    <div class="message">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-88x88/profile8-88x-88.webp' %}" alt="#">
+                        </div>
+                        <div class="message-body">
+                            <h5>Kate Winslet</h5>
+                            <p class="text-muted">They're reprising Titanic! 😍</p>
+                        </div>
+                    </div>
+                    <!--Message Two-->
+                    <div class="message">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-88x88/profile9-88x-88.jpg' %}" alt="#">
+                            <div class="active"></div>
+                        </div>
+                        <div class="message-body">
+                            <h5>Keanu Reeves</h5>
+                            <p class="text-bold">Hey Leo! Tell me if u are there.</p>
+                        </div>
+                    </div>
+                    <!--Message Three-->
+                    <div class="message">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-88x88/profile10-88x-88.webp' %}" alt="#">
+                        </div>
+                        <div class="message-body">
+                            <h5>Tobey Maguire</h5>
+                            <p class="text-muted">Missing work with you friend!</p>
+                        </div>
+                    </div>
+                    <!--Message Four-->
+                    <div class="message">
+                        <div class="profile-photo">
+                            <img src="{% static 'images/profile_img-88x88/profile11-88x-88.webp' %}" alt="#">
+                            <div class="active"></div>
+                        </div>
+                        <div class="message-body">
+                            <h5>Quentin Tarantino</h5>
+                            <p class="text-bold">Got a new idea. Talk me later.</p>
+                        </div>
+                    </div>
+                </div>
+                <!--End of Message-->
+                <!--Friend Request-->
+                <div class="friend-requests">
+                    <h4>Solicitações</h4>
+                    {% if ja_eh_contato %}
+                    <p class="px-2 py-3 text-center">Vocês já estão conectados!</p>
+                    {% endif %}
+                    {% if perfil.usuario.is_active == False %}
+                    <p class="px-2 py-3 text-center">Este perfil encontra-se bloqueado</p>
+                    {% endif %}
+                    {% if ja_eh_contato %}
+                    <div class="action" style="gap: 1rem;display: flex;flex-direction: column;">
+                        <a href="{% url 'desfazer_amizade' perfil.id %}" class="btn btn-primary">
+                            Desfazer amizade
+                        </a>
+                        {% if perfil_logado.usuario.is_superuser %}
+                        {% if perfil.usuario.is_superuser %}
+                        <a href="" class="btn btn-primary">Retirar superuser</a>
+                        {% else %}
+                        <a href="" class="btn btn-primary">Tornar superuser</a>
+                        {% endif %}
+
+                        {% if perfil.usuario.is_active %}
+                        <a href="" class="btn btn-primary">Bloquear usuário</a>
+                        {% else %}
+                        <a href="" class="btn btn-primary">Desbloquear usuário</a>
+                        {% endif %}
+                        {% endif %}
+                    </div>
                     {% else %}
-                    <p class=" px-2 py-3 text-center">Nenhuma solicitação enviada</p>
+                    <a href="{% url 'convidar' perfil.id %}" class="btn btn-primary">Convidar</a>
                     {% endif %}
                 </div>
             </div>
+            <!--End of Right Section-->
+        </div>
+    </main>
 
-            <div class="mt-3 card bg-white">
-                <div class="card-header text-white" style="background: {{ perfil_logado.cor }};">
-                    <h3 class="text-center">Convites Recebidos</h3>
-                </div>
-                <div class="card-body px-0 py-0">
-                    {% if perfil_logado.convites_recebidos.all %}
-                    <ul class="list-group list-group-flush bg-light">
-                        <p class="text-center px-1 pt-3">
-                            Você possui
-                            <span class="badge badge-secondary">{{ perfil_logado.convites_recebidos.count }}</span>
-                            convite{{ perfil_logado.convites_recebidos.count|pluralize }}
-                        </p>
+    <div class="customize-theme">
+        <div class="card">
+            <h2>Customize your view</h2>
+            <p class="text-muted">Manage your font size, color and background.</p>
 
-                        {% for convite in perfil_logado.convites_recebidos.all %}
-                        <a class="list-group-item list-group-item-action list-group-item-light full-w text-center"
-                            href="{% url 'exibir' convite.solicitante.id %}">
-                            {{ convite.solicitante.nome }}
-                        </a>
-                        <li class="list-group-item full-w text-center mb-1">
-                            <a href="/perfil/{{ convite.id }}/aceitar"
-                                class="float-center btn btn-success">Aceitar</a> <a
-                                href="/perfil/{{ convite.id }}/rejeitar"
-                                class="float-center btn btn-danger">Rejeitar</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p class="px-2 py-3 text-center">Nenhuma solicitação recebida</p>
-                    {% endif %}
+            <!--Font Sizes Section-->
+            <div class="font-size">
+                <h4>Font Size</h4>
+                <div>
+                    <h6>Aa</h6>
+                    <div class="choose-size">
+                        <span class="font-size-1"></span>
+                        <span class="font-size-2"></span>
+                        <span class="font-size-3 active"></span>
+                        <span class="font-size-4"></span>
+                        <span class="font-size-5"></span>
+                    </div>
+                    <h3>Aa</h3>
                 </div>
             </div>
-        </aside>
-
+            <!--End of Font Size Section-->
+            <!--Primary Colours Section-->
+            <div class="colour">
+                <h4>Colour</h4>
+                <div class="choose-colour">
+                    <span class="colour-1 active"></span>
+                    <span class="colour-2"></span>
+                    <span class="colour-3"></span>
+                    <span class="colour-4"></span>
+                    <span class="colour-5"></span>
+                </div>
+            </div>
+            <!--End of Primary Colours Section-->
+            <!--Background Colours-->
+            <div class="background">
+                <h4>Background</h4>
+                <div class="choose-bg">
+                    <div class="bg-1 active">
+                        <span></span>
+                        <h5 for="bg-1">Light</h5>
+                    </div>
+                    <div class="bg-2">
+                        <span></span>
+                        <h5 for="bg-2">Dim</h5>
+                    </div>
+                    <div class="bg-3">
+                        <span></span>
+                        <h5 for="bg-3">Lights Out</h5>
+                    </div>
+                </div>
+            </div>
+            <!--End of Background Colours Section-->
+        </div>
     </div>
-</main>
-{% endblock %}
+
+    <!-- Modal de Criar Post -->
+    <div class="create-post-modal">
+        <div class="card">
+            <h2>Crie sua Postagem</h2>
+            <p class="text-muted">Preencha os campos abaixo para publicar um post.</p>
+
+            <form action="{% url 'postagem' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" style="
+                    {% if background == 'lights-out' %}
+                    color: white;
+                    {% elif background == 'dim' %}
+                    color: white;
+                    {% else %}
+                    {% endif %}">
+                </div>
+
+                <div class="input-group">
+                    <label for="texto">Texto</label>
+                    <textarea id="texto" name="texto" rows="4" style="
+                    {% if background == 'lights-out' %}
+                    color: white;
+                    {% elif background == 'dim' %}
+                    color: white;
+                    {% else %}
+                    {% endif %}"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="imagem">Imagem (opcional)</label>
+                    <input type="file" id="imagem" name="imagem">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Publicar</button>
+            </form>
+        </div>
+    </div>
+
+    {% block scripts %}
+    
+    {% endblock %}
+</body>
+
+</html>

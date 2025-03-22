@@ -160,6 +160,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Adicionar evento de clique aos botões de curtir comentario
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.like-button-coment').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            const postId = button.dataset.postId;
+            toggleLikeComent(postId, button);
+        });
+    });
+});
+
 // Adicionar evento de clique aos botões de marcar
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.bookmark-button').forEach(button => {
@@ -171,83 +182,70 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
 document.addEventListener("DOMContentLoaded", function () {
-    // Seleciona todos os botões de abrir comentários
-    document.querySelectorAll(".open-comentario-modal").forEach(button => {
-        button.addEventListener("click", function () {
-            let postId = this.getAttribute("data-post-id"); // Obtém o ID do post clicado
-            document.getElementById("post-id").value = postId; // Define o ID do post no campo oculto
-
-            // Faz a requisição AJAX para buscar os comentários do post
-            fetch(`/comentarios/${postId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    let comentariosDiv = document.querySelector(".comentarios");
-                    comentariosDiv.innerHTML = ""; // Limpa os comentários antigos
-
-                    if (data.comentarios.length > 0) {
-                        data.comentarios.forEach(comentario => {
-                            let commentHTML = `
-                                <div class="comentario">
-                                    <div class="profile-photo" style="margin-bottom: .5rem;">
-                                        <img src="${comentario.imagem_perfil}" alt="Usuário">
-                                    </div>
-                                    <strong>${comentario.perfil}</strong> <small style="font-size: 0.6rem;"> ${comentario.data}</small> <br>
-                                    ${comentario.texto}
-                                </div>
-                            `;
-                            comentariosDiv.innerHTML += commentHTML;
-                        });
-                    } else {
-                        comentariosDiv.innerHTML = "<p>Sem comentários ainda.</p>";
-                    }
-                })
-                .catch(error => console.error("Erro ao buscar comentários:", error));
-
-            // Abre o modal (caso tenha uma função para isso)
-            document.querySelector(".create-comentario-modal").style.display = "block";
-            document.querySelector(".create-comentario-modal").style.alignContent = "center"; // Para centralizar o conteúdo em múltiplas linhas, se houver
-        });
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    // Abrir o modal de visualizar comentários
     document.querySelectorAll(".open-view-comentario-modal").forEach(button => {
         button.addEventListener("click", function () {
             let postId = this.getAttribute("data-post-id");
-            document.getElementById("post-id").value = postId; // Define o ID do post no campo oculto
+            document.getElementById("post-id").value = postId;
 
-            // Buscar os comentários via AJAX (opcional, se não forem carregados diretamente no template)
             fetch(`/comentarios/${postId}/`)
                 .then(response => response.json())
                 .then(data => {
                     let comentariosContainer = document.querySelector(".view-comentario-modal .comentarios");
-                    comentariosContainer.innerHTML = ""; // Limpa os comentários anteriores
+                    comentariosContainer.innerHTML = "";
 
                     if (data.comentarios.length > 0) {
                         data.comentarios.forEach(comentario => {
                             let commentElement = document.createElement("div");
-                            commentElement.classList.add("comentario"); // Adiciona a classe "comentario"
+                            commentElement.classList.add("comentario");
 
-                            // Criar a div da foto do perfil com o style adicional
+                            let comentInternoElement = document.createElement("div");
+                            comentInternoElement.classList.add("coment");
+
+                            let comentCurtidaElement = document.createElement("div");
+                            comentCurtidaElement.classList.add("like-div");
+
                             let profilePhoto = document.createElement("div");
                             profilePhoto.classList.add("profile-photo");
-                            profilePhoto.style.marginBottom = ".5rem";  // Adiciona o margin-bottom
+                            profilePhoto.style.marginBottom = ".5rem";
+                            profilePhoto.innerHTML = comentario.imagem_perfil ? 
+                                `<img src="${comentario.imagem_perfil}" alt="Foto de ${comentario.perfil}">` : 
+                                `<img src="/assets/images/img/user.png" alt="Foto padrão">`;
 
-                            // Se houver uma URL da foto no objeto "comentario", adicione-a
-                            if (comentario.imagem_perfil) {
-                                profilePhoto.innerHTML = `<img src="${comentario.imagem_perfil}" alt="Foto de ${comentario.perfil}">`;
-                            } else {
-                                profilePhoto.innerHTML = `<img src="/assets/images/img/user.png" alt="Foto padrão">`;
-                            }
+                            let likeButton = document.createElement("span");
+                            likeButton.classList.add("like-button");
+                            likeButton.setAttribute("data-comentario-id", comentario.id);
+                            likeButton.style.cursor = "pointer";
+                            likeButton.innerHTML = comentario.curtido ? 
+                                `<i class='bx bxs-heart' style='color:#ff0101'></i>` : 
+                                `<i class="uil uil-heart"></i>`;
 
-                            // Adicionar a foto do perfil e o texto do comentário diretamente à div "comentario"
-                            commentElement.appendChild(profilePhoto);
-                            commentElement.innerHTML += `<strong>${comentario.perfil}</strong> <small style="font-size: 0.6rem;"> ${comentario.data}</small><br>`;
-                            commentElement.innerHTML += `${comentario.texto}`;
+                            likeButton.addEventListener("click", function () {
+                                fetch(`/curtir-comentario/${comentario.id}/`, { 
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        'X-CSRFToken': getCookie('csrftoken')
+                                    },
+                                    body: `comentario_id=${comentario.id}`
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.status === "curtido") {
+                                            likeButton.innerHTML = `<i class='bx bxs-heart' style='color:#ff0101'></i>`;
+                                        } else {
+                                            likeButton.innerHTML = `<i class="uil uil-heart"></i>`;
+                                        }
+                                    });
+                            });
 
+                            comentInternoElement.appendChild(profilePhoto);
+                            comentInternoElement.innerHTML += `<strong>${comentario.perfil}</strong> <small style="font-size: 0.6rem;"> ${comentario.data}</small><br>`;
+                            comentInternoElement.innerHTML += `${comentario.texto}`;
+
+                            comentCurtidaElement.appendChild(likeButton);
+                            commentElement.appendChild(comentInternoElement);
+                            commentElement.appendChild(comentCurtidaElement);
                             comentariosContainer.appendChild(commentElement);
                         });
                     } else {
@@ -255,12 +253,97 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     document.querySelector(".view-comentario-modal").style.display = "block";
-                    document.querySelector(".view-comentario-modal").style.alignContent = "center"; // Para centralizar o conteúdo em múltiplas linhas, se houver
+                    document.querySelector(".view-comentario-modal").style.alignContent = "center";
                 });
         });
     });
 
-    // Fechar o modal ao clicar fora dele
+    document.querySelector(".view-comentario-modal").addEventListener("click", function (e) {
+        if (e.target === this) {
+            this.style.display = "none";
+        }
+    });
+});
+
+
+// fasf
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".open-comentario-modal").forEach(button => {
+        button.addEventListener("click", function () {
+            let postId = this.getAttribute("data-post-id");
+            document.getElementById("post-id").value = postId;
+
+            fetch(`/comentarios/${postId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    let comentariosContainer = document.querySelector(".comentarios");
+                    comentariosContainer.innerHTML = "";
+
+                    if (data.comentarios.length > 0) {
+                        data.comentarios.forEach(comentario => {
+                            let commentElement = document.createElement("div");
+                            commentElement.classList.add("comentario");
+
+                            let comentInternoElement = document.createElement("div");
+                            comentInternoElement.classList.add("coment");
+
+                            let comentCurtidaElement = document.createElement("div");
+                            comentCurtidaElement.classList.add("like-div");
+
+                            let profilePhoto = document.createElement("div");
+                            profilePhoto.classList.add("profile-photo");
+                            profilePhoto.style.marginBottom = ".5rem";
+                            profilePhoto.innerHTML = comentario.imagem_perfil ? 
+                                `<img src="${comentario.imagem_perfil}" alt="Foto de ${comentario.perfil}">` : 
+                                `<img src="/assets/images/img/user.png" alt="Foto padrão">`;
+
+                            let likeButton = document.createElement("span");
+                            likeButton.classList.add("like-button");
+                            likeButton.setAttribute("data-comentario-id", comentario.id);
+                            likeButton.style.cursor = "pointer";
+                            likeButton.innerHTML = comentario.curtido ? 
+                                `<i class='bx bxs-heart' style='color:#ff0101'></i>` : 
+                                `<i class="uil uil-heart"></i>`;
+
+                            likeButton.addEventListener("click", function () {
+                                fetch(`/curtir-comentario/${comentario.id}/`, { 
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        'X-CSRFToken': getCookie('csrftoken')
+                                    },
+                                    body: `comentario_id=${comentario.id}`
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.status === "curtido") {
+                                            likeButton.innerHTML = `<i class='bx bxs-heart' style='color:#ff0101'></i>`;
+                                        } else {
+                                            likeButton.innerHTML = `<i class="uil uil-heart"></i>`;
+                                        }
+                                    });
+                            });
+
+                            comentInternoElement.appendChild(profilePhoto);
+                            comentInternoElement.innerHTML += `<strong>${comentario.perfil}</strong> <small style="font-size: 0.6rem;"> ${comentario.data}</small><br>`;
+                            comentInternoElement.innerHTML += `${comentario.texto}`;
+
+                            comentCurtidaElement.appendChild(likeButton);
+                            commentElement.appendChild(comentInternoElement);
+                            commentElement.appendChild(comentCurtidaElement);
+                            comentariosContainer.appendChild(commentElement);
+                        });
+                    } else {
+                        comentariosContainer.innerHTML = "<p>Sem comentários.</p>";
+                    }
+
+                    document.querySelector(".create-comentario-modal").style.display = "block";
+                    document.querySelector(".create-comentario-modal").style.alignContent = "center";
+                });
+        });
+    });
+
     document.querySelector(".view-comentario-modal").addEventListener("click", function (e) {
         if (e.target === this) {
             this.style.display = "none";
